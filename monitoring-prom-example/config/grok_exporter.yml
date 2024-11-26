@@ -11,10 +11,10 @@ metrics:
   - type: counter
     name: app_log_entries
     help: "Count of log entries"
-    match: "%{TIMESTAMP:timestamp} %{LOGLEVEL:level} - %{GREEDYDATA:message}"
+    match: '%{YEAR}-%{MONTHNUM}-%{MONTHDAY} %{HOUR}:%{MINUTE}:%{SECOND} %{LOGLEVEL:level} - %{GREEDYDATA:message}'
     labels:
-      level: "{{.level}}"
-      message: "{{.message}}"
+      level: '{{.level}}'
+      message: '{{.message}}'
 server:
   host: 0.0.0.0
   port: 9144
