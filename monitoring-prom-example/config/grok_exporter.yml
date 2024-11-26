@@ -1,0 +1,20 @@
+global:
+  config_version: 2
+input:
+  type: file
+  path: "/var/log/app.log"
+  readall: true
+  poll_interval_seconds: 10
+grok:
+  patterns_dir: ./patterns
+metrics:
+  - type: counter
+    name: app_log_entries
+    help: "Count of log entries"
+    match: "%{TIMESTAMP:timestamp} %{LOGLEVEL:level} - %{GREEDYDATA:message}"
+    labels:
+      level: "{{.level}}"
+      message: "{{.message}}"
+server:
+  host: 0.0.0.0
+  port: 9144
