@@ -1,5 +1,5 @@
-from ctypes_classes import *
-from classes import *
+import struct
+from Practices.device4.classes import *
 
 class DataParser:
     def __init__(self, filename):
@@ -115,30 +115,32 @@ class DataParser:
             param_start_idx = param_end_idx
 
     def parse_bedside_message(self, data):
-        msg = BedSideMessageDef_C.from_buffer_copy(data)
+        fmt = '6B6B4h32B2h2h'
+        unpacked_data = struct.unpack(fmt, data)
         bedside_msg = BedSideMessageDef()
-        bedside_msg.dst_addr = list(msg.dst_addr)
-        bedside_msg.src_addr = list(msg.src_addr)
-        bedside_msg.func_code = msg.func_code
-        bedside_msg.sub_code = msg.sub_code
-        bedside_msg.version = msg.version
-        bedside_msg.seq_num = msg.seq_num
-        bedside_msg.req_res = msg.req_res
-        bedside_msg.proc_id = msg.proc_id
-        bedside_msg.oln = list(msg.oln)
-        bedside_msg.return_status = msg.return_status
-        bedside_msg.data_count = msg.data_count
+        bedside_msg.dst_addr = unpacked_data[:6]
+        bedside_msg.src_addr = unpacked_data[6:12]
+        bedside_msg.func_code = unpacked_data[12]
+        bedside_msg.sub_code = unpacked_data[13]
+        bedside_msg.version = unpacked_data[14]
+        bedside_msg.seq_num = unpacked_data[15]
+        bedside_msg.req_res = unpacked_data[16]
+        bedside_msg.proc_id = unpacked_data[17]
+        bedside_msg.oln = unpacked_data[18:50]
+        bedside_msg.return_status = unpacked_data[50]
+        bedside_msg.data_count = unpacked_data[51]
         return bedside_msg
 
     def parse_bedside_float(self, data):
-        bfloat = BedSideFloat_C.from_buffer_copy(data)
+        fmt = '6B'  # 6*UTINY
+        unpacked_data = struct.unpack(fmt, data)
         bedside_float = BedSideFloat()
-        bedside_float.alarm_state = bfloat.alarm_state
-        bedside_float.alarm_level = bfloat.alarm_level
-        bedside_float.audio_alarm_level = bfloat.audio_alarm_level
-        bedside_float.patient_admission = bfloat.patient_admission
-        bedside_float.number_of_parameters = bfloat.number_of_parameters
-        bedside_float.graph_status_msg = bfloat.graph_status_msg
+        bedside_float.alarm_state = unpacked_data[0]
+        bedside_float.alarm_level = unpacked_data[1]
+        bedside_float.audio_alarm_level = unpacked_data[2]
+        bedside_float.patient_admission = unpacked_data[3]
+        bedside_float.number_of_parameters = unpacked_data[4]
+        bedside_float.graph_status_msg = unpacked_data[5]
         return bedside_float
 
     def parse_parameter(self, data):
@@ -153,47 +155,63 @@ class DataParser:
         return param
 
     def parse_parameter_update(self, data):
-        p_udp = ParameterUpdate_C.from_buffer_copy(data)
+        fmt = 'BBH3h'
+        unpacked_data = struct.unpack(fmt, data)
         par_udp = ParameterUpdate()
-        par_udp.par_func_code = p_udp.par_func_code
-        par_udp.parcode = p_udp.parcode
-        par_udp.par_status = p_udp.par_status
-        par_udp.par_val = list(p_udp.par_val)
+        par_udp.par_func_code = unpacked_data[0]  # UTINY
+        par_udp.parcode = unpacked_data[1]  # UTINY
+        par_udp.par_status = unpacked_data[2]  # UCOUNT
+        par_udp.par_val = list(unpacked_data[3:])  # 3 * COUNT (signed 16-bit word)
         return par_udp
 
     def parse_extended_parameter_update(self, data):
-        ext_p_udp = ExtendedParameterUpdate_C.from_buffer_copy(data)
+        fmt = 'BB6h'
+        unpacked_data = struct.unpack(fmt, data)
         ext_par_udp = ExtendedParameterUpdate()
-        ext_par_udp.par_func_code = ext_p_udp.par_func_code
-        ext_par_udp.par_code = ext_p_udp.par_code
-        ext_par_udp.par_val = list(ext_p_udp.par_val)
+        ext_par_udp.par_func_code = unpacked_data[0]  # UTINY
+        ext_par_udp.par_code = unpacked_data[1]  # UTINY
+        ext_par_udp.par_val = list(unpacked_data[2:])  # 6 * COUNT (signed 16-bit word)
         return ext_par_udp
 
     def parse_setup_and_limits(self, data):
-        setup = SetupAndLimits_C.from_buffer_copy(data)
-        setup_n_lin = SetupAndLimits()
-        setup_n_lin.par_func_code = setup.par_func_code
-        setup_n_lin.parcode = setup.parcode
-        setup_n_lin.flag = list(setup.flag)
-        limit = [LimitValues_C(lo_limit=l.lo_limit, hi_limit=l.hi_limit) for l in setup.limit_values]
-        setup_n_lin.limit_values = [{'lo_limit': l.lo_limit, 'hi_limit': l.hi_limit} for l in limit]
-        setup_n_lin.extra_limit = setup.extra_limit
-        return setup_n_lin
+        fmt = 'BB2B6hh'
+        unpacked_data = struct.unpack(fmt, data)
+        setup = SetupAndLimits()
+        setup.par_func_code = unpacked_data[0]  # UTINY
+        setup.parcode = unpacked_data[1]  # UTINY
+        setup.flag = unpacked_data[2:4]  # 2 * UTINY
+        setup.limit_values[0].lo_limit = unpacked_data[4]
+        setup.limit_values[0].hi_limit = unpacked_data[5]
+        setup.limit_values[1].lo_limit = unpacked_data[6]
+        setup.limit_values[1].hi_limit = unpacked_data[7]
+        setup.limit_values[2].lo_limit = unpacked_data[8]
+        setup.limit_values[2].hi_limit = unpacked_data[9]
+        setup.extra_limit = unpacked_data[10]
+        return setup
 
     def parse_parameter_messages(self, data):
-        p_mssgs = ParameterMessages_C.from_buffer_copy(data[:10])
+        fmt = 'BB'
+        unpacked_data = struct.unpack(fmt, data[:2])
         param_msg = ParameterMessages()
-        param_msg.par_func_code = p_mssgs.par_func_code
-        param_msg.parcode = p_mssgs.parcode
-        param_msg.messages = [self.parse_parameter_message(data[i+2:i+1+3]) for i in range(3)]
-        param_msg.value = int.from_bytes(data[-2:], byteorder='little')
+        param_msg.par_func_code = unpacked_data[0]  # UTINY
+        param_msg.parcode = unpacked_data[1]  # UTINY
+
+        messages = []
+        for i in range(3):
+            msg_data = data[i+2:i+1+3]
+            messages.append(self.parse_parameter_message(msg_data))
+        param_msg.messages = messages
+        
+        param_msg.value = struct.unpack('H', data[-2:])[0]  # UCOUNT (2 bytes)
+
         return param_msg
 
     def parse_parameter_message(self, data):
-        msg = ParameterMessage_C.from_buffer_copy(data)
+        fmt = 'BB'
+        unpacked_data = struct.unpack(fmt, data)
         param_msg = ParameterMessage()
-        param_msg.attribute = msg.attribute
-        param_msg.msg_index = msg.msg_index
+        param_msg.attribute = unpacked_data[0]  # UTINY
+        param_msg.msg_index = unpacked_data[1]
         return param_msg
 
     def print_parsed_data(self):
@@ -253,11 +271,11 @@ class DataParser:
                     rule.apply(parameter)
 
 
-dataParser = DataParser('Python_Practice/device_4.txt')
-dataParser.parse_data()
+# dataParser = DataParser('Docs/Python Practice/device_4.txt')
+# dataParser.parse_data()
 
-dataParser.print_parsed_data()
+# dataParser.print_parsed_data()
 
-dataParser.update_parameters()
+# dataParser.update_parameters()
 
-dataParser.print_parsed_data()
+# dataParser.print_parsed_data()
