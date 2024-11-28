@@ -7,7 +7,6 @@ namespace PrometheusMetricsAPI
 {
     public class Startup
     {
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // Enable CORS for all origins
@@ -21,11 +20,9 @@ namespace PrometheusMetricsAPI
                 });
             });
 
-            // Add controllers to the service container
             services.AddControllers();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -33,14 +30,12 @@ namespace PrometheusMetricsAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            // Use CORS policy globally
             app.UseCors("AllowAll");
 
             app.UseRouting();
 
             app.UseAuthorization();
 
-            // Map the controller routes
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
