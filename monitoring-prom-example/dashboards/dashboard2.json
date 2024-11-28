@@ -26,7 +26,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "editable": true,
       "error": false,
@@ -54,7 +54,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "refId": "A"
         }
@@ -65,7 +65,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "fieldConfig": {
         "defaults": {
@@ -127,7 +127,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "count(node_cpu_seconds_total{instance=~\"$node\", mode=\"system\"}) or count(node_cpu{instance=~\"$node\", mode=\"system\"})",
           "instant": true,
@@ -146,7 +146,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "fieldConfig": {
         "defaults": {
@@ -227,7 +227,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "sum(irate(node_cpu_seconds_total{mode=\"system\",instance=~'$node'}[5m])) or sum(irate(node_cpu{mode=\"system\",instance=~'$node'}[5m]))",
           "interval": "",
@@ -241,7 +241,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "sum(irate(node_cpu_seconds_total{mode=\"user\",instance=~'$node'}[5m])) or sum(irate(node_cpu{mode=\"user\",instance=~'$node'}[5m]))",
           "interval": "",
@@ -253,7 +253,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "sum(irate(node_cpu_seconds_total{mode=\"nice\",instance=~'$node'}[5m])) or sum(irate(node_cpu{mode=\"nice\",instance=~'$node'}[5m]))",
           "interval": "",
@@ -265,7 +265,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "sum(irate(node_cpu_seconds_total{mode=\"iowait\",instance=~'$node'}[5m])) or sum(irate(node_cpu{mode=\"iowait\",instance=~'$node'}[5m]))",
           "interval": "",
@@ -277,7 +277,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "sum(irate(node_cpu_seconds_total{mode=\"steal\",instance=~'$node'}[5m])) or sum(irate(node_cpu{mode=\"steal\",instance=~'$node'}[5m]))",
           "intervalFactor": 2,
@@ -288,7 +288,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "sum(irate(node_cpu_seconds_total{mode=\"idle\",instance=~'$node'}[5m])) or sum(irate(node_cpu{mode=\"idle\",instance=~'$node'}[5m]))",
           "interval": "",
@@ -300,7 +300,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "sum(irate(node_cpu_seconds_total{mode=\"irq\",instance=~'$node'}[5m])) or sum(irate(node_cpu{mode=\"irq\",instance=~'$node'}[5m]))",
           "interval": "",
@@ -312,7 +312,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "sum(irate(node_cpu_seconds_total{mode=\"softirq\",instance=~'$node'}[5m])) or sum(irate(node_cpu{mode=\"softirq\",instance=~'$node'}[5m]))",
           "interval": "",
@@ -324,7 +324,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "sum(irate(node_cpu_seconds_total{mode=\"guest\",instance=~'$node'}[5m])) or sum(irate(node_cpu{mode=\"guest\",instance=~'$node'}[5m]))",
           "interval": "",
@@ -340,7 +340,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "fieldConfig": {
         "defaults": {
@@ -490,7 +490,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "( node_memory_MemTotal_bytes{instance=~'$node'} - node_memory_MemFree_bytes{instance=~'$node'} - node_memory_Buffers_bytes{instance=~'$node'} - node_memory_Cached_bytes{instance=~'$node'} - node_memory_SwapCached_bytes{instance=~'$node'} - node_memory_Slab_bytes{instance=~'$node'} - node_memory_PageTables_bytes{instance=~'$node'} - node_memory_VmallocUsed_bytes{instance=~'$node'} ) or ( node_memory_MemTotal{instance=~'$node'} - node_memory_MemFree{instance=~'$node'} - node_memory_Buffers{instance=~'$node'} - node_memory_Cached{instance=~'$node'} - node_memory_SwapCached{instance=~'$node'} - node_memory_Slab{instance=~'$node'} - node_memory_PageTables{instance=~'$node'} - node_memory_VmallocUsed{instance=~'$node'} )",
           "interval": "",
@@ -504,7 +504,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_memory_Buffers_bytes{instance=~'$node'} or node_memory_Buffers{instance=~'$node'}",
           "interval": "",
@@ -516,7 +516,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_memory_Cached_bytes{instance=~'$node'} or node_memory_Cached{instance=~'$node'}",
           "interval": "",
@@ -528,7 +528,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_memory_MemFree_bytes{instance=~'$node'} or node_memory_MemFree{instance=~'$node'}",
           "hide": false,
@@ -541,7 +541,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_memory_Slab_bytes{instance=~'$node'} or node_memory_Slab{instance=~'$node'}",
           "interval": "",
@@ -553,7 +553,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_memory_SwapCached_bytes{instance=~'$node'} or node_memory_SwapCached{instance=~'$node'}",
           "interval": "",
@@ -565,7 +565,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_memory_PageTables_bytes{instance=~'$node'} or node_memory_PageTables{instance=~'$node'}",
           "interval": "",
@@ -577,7 +577,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_memory_VmallocUsed_bytes{instance=~'$node'} or node_memory_VmallocUsed{instance=~'$node'}",
           "interval": "",
@@ -590,7 +590,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "(node_memory_SwapTotal_bytes{instance=~'$node'} - node_memory_SwapFree{instance=~'$node'}) or (node_memory_SwapTotal{instance=~'$node'} - node_memory_SwapFree{instance=~'$node'})",
           "interval": "",
@@ -603,7 +603,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_memory_Committed_AS_bytes{instance=~'$node'} or node_memory_Committed_AS{instance=~'$node'}",
           "interval": "",
@@ -616,7 +616,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_memory_Mapped_bytes{instance=~'$node'} or node_memory_Mapped{instance=~'$node'}",
           "interval": "",
@@ -628,7 +628,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_memory_Active_bytes{instance=~'$node'} or node_memory_Active{instance=~'$node'}",
           "interval": "",
@@ -641,7 +641,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_memory_Inactive_bytes{instance=~'$node'} or node_memory_Inactive{instance=~'$node'}",
           "interval": "",
@@ -658,7 +658,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "fieldConfig": {
         "defaults": {
@@ -739,7 +739,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_load1{instance=~\"$node\"}",
           "interval": "",
@@ -762,7 +762,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "decimals": 3,
       "editable": true,
@@ -807,7 +807,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "100.0 - 100 * (node_filesystem_avail_bytes{instance=~'$node',device !~'tmpfs',device!~'by-uuid'} / node_filesystem_size_bytes{instance=~'$node',device !~'tmpfs',device!~'by-uuid'}) or 100.0 - 100 * (node_filesystem_avail{instance=~'$node',device !~'tmpfs',device!~'by-uuid'} / node_filesystem_size{instance=~'$node',device !~'tmpfs',device!~'by-uuid'})",
           "interval": "",
@@ -860,7 +860,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "editable": true,
       "error": false,
@@ -904,7 +904,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "irate(node_disk_io_time_seconds_total{instance=~\"$node\"}[5m])*100 or irate(node_disk_io_time_ms{instance=~\"$node\"}[5m])/10",
           "interval": "",
@@ -956,7 +956,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "editable": true,
       "error": false,
@@ -1005,7 +1005,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "irate(node_disk_reads_completed_total{instance=~'$node'}[5m]) or irate(node_disk_reads_completed{instance=~'$node'}[5m])",
           "interval": "",
@@ -1019,7 +1019,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "irate(node_disk_writes_completed_total{instance=~'$node'}[5m]) or irate(node_disk_writes_completed{instance=~'$node'}[5m])",
           "intervalFactor": 2,
@@ -1069,7 +1069,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "editable": true,
       "error": false,
@@ -1118,7 +1118,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "irate(node_disk_read_bytes_total{instance=~'$node'}[5m]) or irate(node_disk_sectors_read{instance=~'$node'}[5m]) * 512",
           "interval": "",
@@ -1130,7 +1130,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "irate(node_disk_written_bytes_total{instance=~'$node'}[5m]) or irate(node_disk_sectors_written{instance=~'$node'}[5m]) * 512",
           "interval": "",
@@ -1182,7 +1182,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "editable": true,
       "error": false,
@@ -1226,7 +1226,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_disk_io_now{instance=~\"$node\"}",
           "interval": "",
@@ -1278,7 +1278,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "editable": true,
       "error": false,
@@ -1322,7 +1322,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "irate(node_context_switches_total{instance=~\"$node\"}[5m]) or irate(node_context_switches{instance=~\"$node\"}[5m])",
           "interval": "",
@@ -1373,7 +1373,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "editable": true,
       "error": false,
@@ -1422,7 +1422,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "irate(node_network_receive_bytes_total{instance=~'$node'}[5m])*8 or irate(node_network_receive_bytes{instance=~'$node'}[5m])*8",
           "interval": "",
@@ -1436,7 +1436,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "irate(node_network_transmit_bytes_total{instance=~'$node'}[5m])*8 or irate(node_network_transmit_bytes{instance=~'$node'}[5m])*8",
           "interval": "",
@@ -1486,7 +1486,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "editable": true,
       "error": false,
@@ -1535,7 +1535,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "irate(node_infiniband_port_data_received_bytes_total{instance=~\"$node\",device!~\"hfi.+\"}[5m])*8 or irate(node_infiniband_port_data_received_bytes_total{instance=~\"$node\",device=~\"hfi.+\"}[5m])*8*2",
           "interval": "",
@@ -1549,7 +1549,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "irate(node_infiniband_port_data_transmitted_bytes_total{instance=~\"$node\",device!~\"hfi.+\"}[5m])*8 or irate(node_infiniband_port_data_transmitted_bytes_total{instance=~\"$node\",device=~\"hfi.+\"}[5m])*8*2",
           "interval": "",
@@ -1599,7 +1599,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "editable": true,
       "error": false,
@@ -1643,7 +1643,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_netstat_Tcp_CurrEstab{instance=~'$node'}",
           "intervalFactor": 2,
@@ -1692,7 +1692,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "editable": true,
       "error": false,
@@ -1745,7 +1745,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "irate(node_netstat_Udp_InDatagrams{instance=~\"$node\"}[5m])",
           "intervalFactor": 2,
@@ -1757,7 +1757,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "irate(node_netstat_Udp_InErrors{instance=~\"$node\"}[5m])",
           "intervalFactor": 2,
@@ -1768,7 +1768,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "irate(node_netstat_Udp_OutDatagrams{instance=~\"$node\"}[5m])",
           "interval": "",
@@ -1780,7 +1780,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "irate(node_netstat_Udp_NoPorts{instance=~\"$node\"}[5m])",
           "intervalFactor": 2,
@@ -1828,7 +1828,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "bdr5xe8hlsu0wf"
+        "uid": "ce54v7b5byrr4c"
       },
       "editable": true,
       "error": false,
@@ -1872,7 +1872,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "bdr5xe8hlsu0wf"
+            "uid": "ce54v7b5byrr4c"
           },
           "expr": "node_nf_conntrack_entries_limit{instance=~\"$node\"} - node_nf_conntrack_entries{instance=~\"$node\"}",
           "intervalFactor": 2,
@@ -1927,7 +1927,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "bdr5xe8hlsu0wf"
+          "uid": "ce54v7b5byrr4c"
         },
         "definition": "",
         "hide": 0,

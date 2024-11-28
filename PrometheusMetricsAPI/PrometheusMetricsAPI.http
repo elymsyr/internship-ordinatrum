@@ -1,0 +1,6 @@
+@PrometheusMetricsAPI_HostAddress = http://localhost:5168
+
+GET {{PrometheusMetricsAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "dgSP8YLwk/Buu5dfdY6FCy6R+0vm2hDeADwRfxFjjTw=",
+  "Source": "PrometheusMetricsAPI",
+  "BasePath": "_content/PrometheusMetricsAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

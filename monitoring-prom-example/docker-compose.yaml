@@ -20,6 +20,8 @@ services:
       - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
       - prometheus-data:/prometheus
     restart: unless-stopped
+    networks:
+      - monitoring
 
   grafana:
     image: docker.io/grafana/grafana-oss:11.1.0
@@ -39,6 +41,8 @@ services:
       - GF_SECURITY_ADMIN_USER=adminOrdinatrum
       - GF_SECURITY_ADMIN_PASSWORD=Ilovearcbox!100
     restart: unless-stopped
+    networks:
+      - monitoring
 
   node_exporter:
     image: quay.io/prometheus/node-exporter:v1.8.1
@@ -86,3 +90,7 @@ services:
     ports:
       - "9144:9144"
     restart: unless-stopped
+
+networks:
+  monitoring:
+     driver: bridge
