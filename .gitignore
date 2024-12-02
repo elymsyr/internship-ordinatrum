@@ -3,9 +3,16 @@ __pycache__/
 *.py[cod]
 *$py.class
 Others/
+keys.py
 
 # C extensions
 *.so
+
+.sln
+.odt
+Docs/
+Others/
+.deb
 
 # Distribution / packaging
 .Python

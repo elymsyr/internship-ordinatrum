@@ -20,29 +20,27 @@ services:
       - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
       - prometheus-data:/prometheus
     restart: unless-stopped
-    networks:
-      - monitoring
 
   grafana:
-    image: docker.io/grafana/grafana-oss:11.1.0
+    image: docker.io/grafana/grafana-oss:11.3.1-ubuntu
     container_name: grafana
     ports:
       - "3000:3000"
     volumes:
       - grafana-data:/var/lib/grafana
-# example configuration for SMPT server (required for alerting)
-    environment:
-      - GF_SMTP_ENABLED=true
-      - GF_SMTP_HOST=smtp.example.com:587
-      - GF_SMTP_USER=grafanaalerttestordinatrum@gmail.com
-      - GF_SMTP_PASSWORD=12345678A!
-      - GF_SMTP_FROM_ADDRESS=grafanaalerttestordinatrum@gmail.com
-      - GF_SMTP_SKIP_VERIFY=true
-      - GF_SECURITY_ADMIN_USER=adminOrdinatrum
-      - GF_SECURITY_ADMIN_PASSWORD=Ilovearcbox!100
+      - ./grafana.ini:/etc/grafana/grafana.ini       # Bind-mount the custom grafana.ini
+      - ./defaults.ini:/usr/share/grafana/conf/defaults.ini  # Bind-mount the custom defaults.ini
+    # environment:
+    #   - GF_SMTP_ENABLED=true
+    #   - GF_SMTP_HOST=smtp.example.com:587
+    #   - GF_SMTP_USER=grafanaalerttestordinatrum@gmail.com
+    #   - GF_SMTP_PASSWORD=12345678A!
+    #   - GF_SMTP_FROM_ADDRESS=grafanaalerttestordinatrum@gmail.com
+    #   - GF_SMTP_SKIP_VERIFY=true
+    #   - GF_SECURITY_ADMIN_USER=adminOrdinatrum
+    #   - GF_SECURITY_ADMIN_PASSWORD=Ilovearcbox!100
+      # - GF_SECURITY_ALLOW_EMBEDDING=true
     restart: unless-stopped
-    networks:
-      - monitoring
 
   node_exporter:
     image: quay.io/prometheus/node-exporter:v1.8.1
@@ -90,7 +88,3 @@ services:
     ports:
       - "9144:9144"
     restart: unless-stopped
-
-networks:
-  monitoring:
-     driver: bridge
