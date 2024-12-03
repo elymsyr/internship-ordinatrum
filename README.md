@@ -26,9 +26,6 @@ This project sets up a comprehensive monitoring system using Docker Compose, com
 
 ```
 chmod +x install_and_run.sh
-Run the Script: Execute the script:
-```
-```
 ./install_and_run.sh
 ```
 
@@ -38,9 +35,6 @@ Run the Script: Execute the script:
 
 ```
 chmod +x add_source_n_dashboard.sh.sh
-Run the Script: Execute the script:
-```
-```
 ./add_source_n_dashboard.sh.sh
 ```
 
