@@ -187,3 +187,16 @@ def get_device_info(
         final_data.append(instance_summary)
 
     return final_data
+
+@app.get("/")
+def root():
+    return {
+        "message": "Welcome to the Monitoring API",
+        "endpoints": {
+            "/grafana/dashboards": "Fetch the list of Grafana dashboards.",
+            "/prometheus/query": "Query Prometheus data with optional time range.",
+            "/prometheus/device_info": "Fetch Prometheus data for specific device metrics over a time range."
+        },
+        "note": "For detailed information on each endpoint, refer to the documentation: github.com/elymsyr/internship-ordinatrum"
+    }
+
