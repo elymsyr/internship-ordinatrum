@@ -1,15 +1,15 @@
-from keys import API_KEY
+# from keys import API_KEY
 import re
 from datetime import datetime, timedelta
 
 GRAFANA_API_URL = "http://admin:admin@localhost:3000/api"
-GRAFANA_API_KEY = f"Bearer {API_KEY}"
+# GRAFANA_API_KEY = f"Bearer {API_KEY}"
 PROMETHEUS_API_URL = "http://localhost:9090/api/v1"
 
-headers = {
-    "Authorization": GRAFANA_API_KEY,
-    "Content-Type": "application/json",
-}
+# headers = {
+#     "Authorization": GRAFANA_API_KEY,
+#     "Content-Type": "application/json",
+# }
 
 metrics = {
     'system_metrics': {

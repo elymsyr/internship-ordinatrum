@@ -13,7 +13,7 @@ def get_dashboards():
     Returns:
         list: A list of Grafana dashboards in JSON format.
     """
-    response = requests.get(f"{GRAFANA_API_URL}/search", headers=headers)
+    response = requests.get(f"{GRAFANA_API_URL}/search") # , headers=headers
     return response.json()
 
 @app.get("/prometheus/query")
