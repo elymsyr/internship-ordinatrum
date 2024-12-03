@@ -46,7 +46,7 @@ Pygments @ file:///home/conda/feedstock_root/build_artifacts/pygments_1714846767
 PyJWT==2.7.0
 pyparsing==3.2.0
 python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/python-dateutil_1731919281354/work
-python-multipart==0.0.17
+python-multipart==0.0.18
 pyzmq @ file:///home/conda/feedstock_root/build_artifacts/pyzmq_1728642243942/work
 requests==2.32.3
 scikit-learn==1.5.2
