@@ -19,9 +19,9 @@ This project sets up a comprehensive monitoring system using Docker Compose, com
 
 ## Installation
 
-### 1. Run [`.sh file`](install_and_run.sh) to clone the repository and start the docker-compose and the api.
+#### 1. Run [`.sh file`](install_and_run.sh) to clone the repository and start the docker-compose and the api.
 
-#### Make the Script Executable: If you haven’t done so already, run:
+##### Make the Script Executable: If you haven’t done so already, run:
 
 ```
 chmod +x install_and_run.sh
@@ -31,9 +31,9 @@ Run the Script: Execute the script:
 ./install_and_run.sh
 ```
 
-### 2. Run [`.sh file`](add_source_n_dashboard.sh) to add Prometheus as the data source and the [`dashboard1`](monitoring-system/dashboards/dashboard1.json) to Grafana.
+#### 2. Run [`.sh file`](add_source_n_dashboard.sh) to add Prometheus as the data source and the [`dashboard1`](monitoring-system/dashboards/dashboard1.json) to Grafana.
 
-#### Make the Script Executable: If you haven’t done so already, run:
+##### Make the Script Executable: If you haven’t done so already, run:
 
 ```
 chmod +x add_source_n_dashboard.sh.sh
@@ -43,4 +43,4 @@ Run the Script: Execute the script:
 ./add_source_n_dashboard.sh.sh
 ```
 
-#### Be sure that the data source uid is same with the one in the dashboard json files.
+##### Be sure that the data source uid is same with the one in the dashboard json files.
