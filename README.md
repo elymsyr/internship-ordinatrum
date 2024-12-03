@@ -29,7 +29,7 @@ chmod +x install_and_run.sh
 ./install_and_run.sh
 ```
 
-#### 2. Run [`.sh file`](add_source_n_dashboard.sh) to add Prometheus as the data source and the [`dashboard1`](monitoring-system/dashboards/dashboard1.json) to Grafana.
+#### 2. Run [`.sh file`](add_source_n_dashboard.sh) to add Prometheus as the data source and import the [`dashboard1`](monitoring-system/dashboards/dashboard1.json) to Grafana.
 
 ##### Make the Script Executable: If you haven’t done so already, run:
 
