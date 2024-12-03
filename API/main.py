@@ -1,140 +1,110 @@
-import requests
-from fastapi import FastAPI, Query
-from datetime import datetime, timedelta
-from keys import API_KEY
+import requests, re
+from fastapi import FastAPI
+from datetime import datetime
+from helper import *
 
 app = FastAPI()
 
-GRAFANA_API_URL = "http://admin:admin@localhost:3000/api"
-GRAFANA_API_KEY = f"Bearer {API_KEY}"
-PROMETHEUS_API_URL = "http://localhost:9090/api/v1"
-
-headers = {
-    "Authorization": GRAFANA_API_KEY,
-    "Content-Type": "application/json",
-}
-
-metrics = {
-    'system_metrics': {
-        'cpu': [
-            'node_cpu_seconds_total',  # Total CPU time spent in different modes (user, system, idle, etc.)
-            'node_cpu_seconds_user',   # Time spent in user mode
-            'node_cpu_seconds_system', # Time spent in system mode
-            'node_cpu_seconds_idle',   # Time spent idle
-            'node_cpu_seconds_iowait', # Time spent waiting for I/O
-        ],
-        'memory': [
-            'node_memory_MemTotal_bytes',  # Total memory available in the system
-            'node_memory_MemFree_bytes',   # Free memory
-            'node_memory_Buffers_bytes',   # Memory used by buffers
-            'node_memory_Cached_bytes',    # Memory used for caching files
-            'node_memory_SwapTotal_bytes', # Total swap memory
-            'node_memory_SwapFree_bytes'   # Free swap memory
-        ],
-        'disk_io': [
-            'node_disk_io_now',            # Number of I/Os currently in progress
-            'node_disk_io_time_seconds',   # Total time spent doing I/O operations
-            'node_disk_read_bytes_total',  # Total number of bytes read
-            'node_disk_written_bytes_total' # Total number of bytes written
-        ],
-        'filesystem': [
-            'node_filesystem_size_bytes',  # Total size of the filesystem
-            'node_filesystem_free_bytes',  # Free space on the filesystem
-            'node_filesystem_avail_bytes', # Space available for unprivileged users
-            'node_filesystem_files_free'   # Free inodes
-        ],
-        'network': [
-            'node_network_receive_bytes_total',   # Total number of bytes received
-            'node_network_transmit_bytes_total',  # Total number of bytes transmitted
-            'node_network_receive_errs_total',    # Total receive errors
-            'node_network_transmit_errs_total',   # Total transmit errors
-            'node_network_receive_packets_total', # Total packets received
-            'node_network_transmit_packets_total' # Total packets transmitted
-        ]
-    },
-    'hardware_metrics': {
-        'temperature': [
-            'node_hwmon_temp_celsius' # Current hardware temperature (requires lm-sensors or other monitoring tools)
-        ],
-        'fan_speed': [
-            'node_hwmon_fan_speed_rpm' # Current fan speed in RPM
-        ],
-        'power_supply': [
-            'node_hwmon_power_watts'   # Current power usage in watts
-        ]
-    }
-}
-
 @app.get("/grafana/dashboards")
 def get_dashboards():
+    """
+    Fetch the list of Grafana dashboards.
+
+    Returns:
+        list: A list of Grafana dashboards in JSON format.
+    """
     response = requests.get(f"{GRAFANA_API_URL}/search", headers=headers)
     return response.json()
 
 @app.get("/prometheus/query")
 def query_prometheus(query: str, start: str = None, end: str = None, step: str = None):
+    """
+    Query Prometheus data using the provided query and optional time range.
+
+    Args:
+        query (str): PromQL query to fetch the metric data.
+        start (str, optional): Start time of the query in ISO format or relative time (e.g., '10minute').
+        end (str, optional): End time of the query in ISO format or relative time. Defaults to 'now'.
+        step (str, optional): Step duration between data points in Prometheus (e.g., '60s').
+
+    Returns:
+        dict: The Prometheus query result in JSON format.
+    """
     params = {"query": query}
     if start and end and step:
         params.update({"start": start, "end": end, "step": step})
-    response = requests.get(PROMETHEUS_API_URL, params=params)
+    response = requests.get(f"{PROMETHEUS_API_URL}/query", params=params)
     return response.json()
 
-def analyze_data(prometheus_data):
-    uptime = prometheus_data["data"]["result"]
-    downtime_periods = []
-    for data_point in uptime:
-        timestamp, value = data_point["value"]
-        if float(value) == 0:
-            downtime_periods.append(timestamp)
-    return {"downtime_periods": downtime_periods}
-
-@app.get("/device/info")
-def get_device_info():
-    query = 'up{job="node_exporter"}'
-    prometheus_response = query_prometheus(query)
-    info = analyze_data(prometheus_response)
-    return info
-
-def calculate_start_time(n: int, period: str) -> str:
-    """Helper function to calculate the start time based on the last n (minutes/days/months/years)"""
-    now = datetime.utcnow()
-    if period == 'minute':
-        delta = timedelta(minutes=n)
-    elif period == 'hour':
-        delta = timedelta(hours=n)
-    elif period == 'day':
-        delta = timedelta(days=n)
-    elif period == 'month':
-        delta = timedelta(days=30*n)
-    elif period == 'year':
-        delta = timedelta(days=365*n)
-    else:
-        raise ValueError("Invalid period, must be one of: minute, day, month, year")
-
-    start_time = now - delta
-    return start_time.isoformat() + "Z"
-
-def iso_to_unix_timestamp(iso_timestamp: str) -> float:
-    dt = datetime.fromisoformat(iso_timestamp.replace("Z", "+00:00"))
-    unix_timestamp = dt.timestamp()
-    return unix_timestamp
-
 @app.get("/prometheus/device_info")
-def get_device_info(n: int = 60, metrics: dict = None, period: str = Query("minute", enum=["minute", "hour", "day", "month", "year"]), step: str = "60s"):
-    step_timestamp = int(step[:-1])
+def get_device_info(
+    start: str = "30minute",
+    end: str = "now",
+    metrics: dict = None,
+    step: str = "60s"
+):
+    """
+    Fetch Prometheus data for specific device metrics over a time range.
+
+    Args:
+        start (str, optional): Start time for the data query, in ISO format or relative time (e.g., '30minute').
+            Defaults to '30minute'.
+        end (str, optional): End time for the data query, in ISO format or relative time. Defaults to 'now'.
+        metrics (dict, optional): Dictionary of Prometheus queries to fetch various metrics. 
+            Defaults to a predefined set of common system metrics.
+        step (str, optional): Step duration between data points in Prometheus, Seconds: s (e.g., 15s, 30s, 60s), Minutes: m (e.g., 1m, 5m, 10m), Hours: h (e.g., 1h, 6h, 12h), Days: d (e.g., 1d, 7d), Weeks: w (e.g., 1w, 2w). 
+            Defaults to '60s'.
+
+    Returns:
+        list: A list of devices with their metrics and uptime information.
+    """
+
     try:
-        start_time = calculate_start_time(n, period)
+        if re.match(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", start):
+            start_time = start
+        else:
+            start_time = parse_relative_time(start).isoformat() + "Z"
     except ValueError as e:
         return {"error": str(e)}
 
-    end_time = datetime.utcnow().isoformat() + "Z"
+    if end == "now":
+        end_time = datetime.utcnow().isoformat() + "Z"
+    else:
+        try:
+            if re.match(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", end):
+                end_time = end
+            else:
+                end_time = parse_relative_time(end).isoformat() + "Z"
+        except ValueError as e:
+            return {"error": str(e)}
 
-    if metrics is None: metrics = {
-        "up":  "up",
-        "cpu_usage": "rate(node_cpu_seconds_total{mode!='idle'}[5m])",
-        "memory_available": "(node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100",
-        "disk_io": "rate(node_disk_io_time_seconds_total[5m])",
-        "network_errors": "rate(node_network_receive_errs_total[5m]) + rate(node_network_transmit_errs_total[5m])"
-    }
+    start_timestamp = iso_to_unix_timestamp(start_time)
+    end_timestamp = iso_to_unix_timestamp(end_time)
+    
+    step_duration_format = step[-1]
+    step_timestamp = int(step[:-1])
+    if step_duration_format in ['s', 'm', 'h', 'd', 'w']:
+        if step_duration_format == 'm':
+            step_timestamp *= 60
+        elif step_duration_format == 'h':
+            step_timestamp *= 3600
+        elif step_duration_format == 'd':
+            step_timestamp *= 3600 * 24
+        elif step_duration_format == 'w':
+            step_timestamp *= 3600 * 24 * 7
+    else: raise ValueError("Invalid time format. Must be like '10s', '4w', '5d', etc.")
+
+    expected_data = (end_timestamp-start_timestamp)/step_timestamp
+    print(expected_data)
+
+    if metrics is None:
+        metrics = {
+            "up": "up",
+            "cpu_usage": "rate(node_cpu_seconds_total{mode!='idle'}[5m])",
+            "memory_available": "(node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100",
+            "disk_io": "rate(node_disk_io_time_seconds_total[5m])",
+            "network_errors": "rate(node_network_receive_errs_total[5m]) + rate(node_network_transmit_errs_total[5m])"
+        }
 
     instance_data = {}
 
@@ -143,7 +113,7 @@ def get_device_info(n: int = 60, metrics: dict = None, period: str = Query("minu
             "query": query,
             "start": start_time,
             "end": end_time,
-            "step": step
+            "step": f"{step_timestamp}s"
         }
 
         response = requests.get(f"{PROMETHEUS_API_URL}/query_range", params=params)
@@ -162,8 +132,17 @@ def get_device_info(n: int = 60, metrics: dict = None, period: str = Query("minu
             last_timestamp = None
             for value in result['values']:
                 timestamp = value[0]
-                # print(timestamp-last_ts if last_ts is not None else 'None', timestamp, last_ts)
-                while last_timestamp is not None and timestamp-step_timestamp != last_timestamp:
+                if last_timestamp is None:
+                    start_timestamp_follow = int(start_timestamp) + timestamp - int(timestamp)
+                    while start_timestamp_follow+step_timestamp < timestamp:
+                        start_timestamp_follow += step_timestamp
+                        # print(start_timestamp_follow)
+                        formatted_timestamp = format_date(start_timestamp_follow)
+                        if formatted_timestamp not in instance_data[instance]["metrics"]:
+                            instance_data[instance]["metrics"][formatted_timestamp] = {}
+                        instance_data[instance]["metrics"][formatted_timestamp]['up'] = 0
+
+                while last_timestamp is not None and timestamp - step_timestamp != last_timestamp:
                     last_timestamp += step_timestamp
                     formatted_timestamp = format_date(last_timestamp)
                     if formatted_timestamp not in instance_data[instance]["metrics"]:
@@ -208,9 +187,3 @@ def get_device_info(n: int = 60, metrics: dict = None, period: str = Query("minu
         final_data.append(instance_summary)
 
     return final_data
-
-def format_result(result_data: dict):
-    return None
-
-def format_date(date: float):
-    return datetime.fromtimestamp(int(float(date))).isoformat() + "Z"
