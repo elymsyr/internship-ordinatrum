@@ -4,12 +4,12 @@ This project sets up a comprehensive monitoring system using Docker Compose, com
 
 ## Features
 
-- *System Resource Monitoring:* Uses Node Exporter and Telegraf to collect metrics from multiple nodes.
-- *Visualization:* Grafana for real-time visualization and dashboards.
-- *Log Parsing:* Grok Exporter parses logs and exports metrics to Prometheus.
-- *Prometheus Integration:* Collects and stores time-series data for monitoring.
-- *Custom API:* A Python FastAPI that interacts with Grafana and Prometheus to provide device monitoring and analysis.
-- *Easy Deployment:* Docker Compose for easy setup and management of services.
+- **System Resource Monitoring:** Uses Node Exporter and Telegraf to collect metrics from multiple nodes.
+- **Visualization:** Grafana for real-time visualization and dashboards.
+- **Log Parsing:** Grok Exporter parses logs and exports metrics to Prometheus.
+- **Prometheus Integration:** Collects and stores time-series data for monitoring.
+- **Custom API:** A Python FastAPI that interacts with Grafana and Prometheus to provide device monitoring and analysis.
+- **Easy Deployment:** Docker Compose for easy setup and management of services.
 
 ## Prerequisites
 
