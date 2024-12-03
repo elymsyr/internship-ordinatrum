@@ -113,9 +113,14 @@ def calculate_start_time(n: int, period: str) -> str:
     start_time = now - delta
     return start_time.isoformat() + "Z"
 
+def iso_to_unix_timestamp(iso_timestamp: str) -> float:
+    dt = datetime.fromisoformat(iso_timestamp.replace("Z", "+00:00"))
+    unix_timestamp = dt.timestamp()
+    return unix_timestamp
+
 @app.get("/prometheus/device_info")
 def get_device_info(n: int = 60, metrics: dict = None, period: str = Query("minute", enum=["minute", "hour", "day", "month", "year"]), step: str = "60s"):
-    step_ts = int(step[:-1])
+    step_timestamp = int(step[:-1])
     try:
         start_time = calculate_start_time(n, period)
     except ValueError as e:
@@ -148,18 +153,23 @@ def get_device_info(n: int = 60, metrics: dict = None, period: str = Query("minu
         data = response.json()
         for result in data['data']['result']:
             instance = result['metric']['instance']
-            
+
             if instance not in instance_data:
                 instance_data[instance] = {
                     "metrics": {}
                 }
-            
-            last_ts = 0
+
+            last_timestamp = None
             for value in result['values']:
                 timestamp = value[0]
-                # print(timestamp, last_ts)
-                # while timestamp-step_ts != last_ts:
-                    
+                # print(timestamp-last_ts if last_ts is not None else 'None', timestamp, last_ts)
+                while last_timestamp is not None and timestamp-step_timestamp != last_timestamp:
+                    last_timestamp += step_timestamp
+                    formatted_timestamp = format_date(last_timestamp)
+                    if formatted_timestamp not in instance_data[instance]["metrics"]:
+                        instance_data[instance]["metrics"][formatted_timestamp] = {}
+                    instance_data[instance]["metrics"][formatted_timestamp]['up'] = 0
+
                 metric_value = value[1]
                 formatted_timestamp = format_date(timestamp)
 
@@ -167,7 +177,7 @@ def get_device_info(n: int = 60, metrics: dict = None, period: str = Query("minu
                     instance_data[instance]["metrics"][formatted_timestamp] = {}
 
                 instance_data[instance]["metrics"][formatted_timestamp][metric_name] = metric_value
-                last_ts = timestamp
+                last_timestamp = timestamp
 
     final_data = []
     for instance, data in instance_data.items():
@@ -185,13 +195,13 @@ def get_device_info(n: int = 60, metrics: dict = None, period: str = Query("minu
 
         if "up" in metrics_at_time:
             uptime_data = [entry["up"] for entry in instance_summary["metrics"]]
-            total_time = len(uptime_data) * step_ts
+            total_time = len(uptime_data) * step_timestamp
             uptime_time = sum([1 for entry in uptime_data if entry == "1"])
             uptime_percentage = (uptime_time / len(uptime_data)) * 100 if len(uptime_data) > 0 else 0
 
             instance_summary["uptime"] = {
                 "total_time_seconds": total_time,
-                "uptime_time_seconds": uptime_time * step_ts,
+                "uptime_time_seconds": uptime_time * step_timestamp,
                 "uptime_percentage": uptime_percentage
             }
 
