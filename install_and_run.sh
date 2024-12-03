@@ -19,6 +19,17 @@ echo "To access Grafana, use the default login credentials:"
 echo "Username: admin"
 echo "Password: admin"
 
+
+ENV_NAME="monitoring"
+
+conda create --name $ENV_NAME python=3.13 -y
+
+conda activate $ENV_NAME
+
+pip install -r requirements.txt
+
+echo "Environment $ENV_NAME has been created and dependencies have been installed."
+
 cd ../API
 uvicorn main:app --reload
 sleep 5

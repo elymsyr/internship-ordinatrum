@@ -13,13 +13,14 @@ This project sets up a comprehensive monitoring system using Docker Compose, com
 
 ## Prerequisites
 
-- Docker
-- Docker Compose
+- Docker (version 27.3.1, build ce12230)
+- Docker Compose (version 1.29.2, build unknown)
 - Python 3.13
+- Conda 24.9.x or newer
 
 ## Installation
 
-#### 1. Run [`.sh file`](install_and_run.sh) to clone the repository and start the docker-compose and the api.
+#### 1. Run [`.sh file`](install_and_run.sh) to clone the repository and start the docker-compose and the api. This also creates conda environment.
 
 ##### Make the Script Executable: If you haven’t done so already, run:
 
