@@ -26,7 +26,7 @@ def find_key(data, key_to_find):
     recurse(data)
     return found_items
 
-grafana_url = "http://localhost:3000/api/dashboards/uid/b77c9b13db5d7b"
+grafana_url = "https://admin:admin@localhost:3000/api/dashboards/uid/a77c9b13db5d7b"
 headers = {'Authorization': f"Bearer {API_KEY}"}
 response = requests.get(grafana_url, headers=headers)
 dashboard_data = response.json()

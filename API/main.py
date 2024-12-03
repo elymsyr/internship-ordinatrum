@@ -1,118 +1,206 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Body
-from fastapi.security import OAuth2PasswordBearer
-from pydantic import BaseModel
 import requests
-import json
-from typing import Optional, List
+from fastapi import FastAPI, Query
+from datetime import datetime, timedelta
+from keys import API_KEY
 
-# Configuration
-PROMETHEUS_URL = "http://localhost:9090/api/v1/query"  # Adjust based on your Prometheus URL
-QUERY_FILE = "queries.json"  # File to store user-defined queries
-
-# FastAPI instance
 app = FastAPI()
 
-# OAuth2 password bearer for strong authentication
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+GRAFANA_API_URL = "http://admin:admin@localhost:3000/api"
+GRAFANA_API_KEY = f"Bearer {API_KEY}"
+PROMETHEUS_API_URL = "http://localhost:9090/api/v1"
 
-# Dummy user data for authentication
-fake_users_db = {
-    "user1": {
-        "username": "user1",
-        "password": "secretpassword",  # In a real app, use hashed passwords
+headers = {
+    "Authorization": GRAFANA_API_KEY,
+    "Content-Type": "application/json",
+}
+
+metrics = {
+    'system_metrics': {
+        'cpu': [
+            'node_cpu_seconds_total',  # Total CPU time spent in different modes (user, system, idle, etc.)
+            'node_cpu_seconds_user',   # Time spent in user mode
+            'node_cpu_seconds_system', # Time spent in system mode
+            'node_cpu_seconds_idle',   # Time spent idle
+            'node_cpu_seconds_iowait', # Time spent waiting for I/O
+        ],
+        'memory': [
+            'node_memory_MemTotal_bytes',  # Total memory available in the system
+            'node_memory_MemFree_bytes',   # Free memory
+            'node_memory_Buffers_bytes',   # Memory used by buffers
+            'node_memory_Cached_bytes',    # Memory used for caching files
+            'node_memory_SwapTotal_bytes', # Total swap memory
+            'node_memory_SwapFree_bytes'   # Free swap memory
+        ],
+        'disk_io': [
+            'node_disk_io_now',            # Number of I/Os currently in progress
+            'node_disk_io_time_seconds',   # Total time spent doing I/O operations
+            'node_disk_read_bytes_total',  # Total number of bytes read
+            'node_disk_written_bytes_total' # Total number of bytes written
+        ],
+        'filesystem': [
+            'node_filesystem_size_bytes',  # Total size of the filesystem
+            'node_filesystem_free_bytes',  # Free space on the filesystem
+            'node_filesystem_avail_bytes', # Space available for unprivileged users
+            'node_filesystem_files_free'   # Free inodes
+        ],
+        'network': [
+            'node_network_receive_bytes_total',   # Total number of bytes received
+            'node_network_transmit_bytes_total',  # Total number of bytes transmitted
+            'node_network_receive_errs_total',    # Total receive errors
+            'node_network_transmit_errs_total',   # Total transmit errors
+            'node_network_receive_packets_total', # Total packets received
+            'node_network_transmit_packets_total' # Total packets transmitted
+        ]
+    },
+    'hardware_metrics': {
+        'temperature': [
+            'node_hwmon_temp_celsius' # Current hardware temperature (requires lm-sensors or other monitoring tools)
+        ],
+        'fan_speed': [
+            'node_hwmon_fan_speed_rpm' # Current fan speed in RPM
+        ],
+        'power_supply': [
+            'node_hwmon_power_watts'   # Current power usage in watts
+        ]
     }
 }
 
-# Function to verify credentials (dummy in this case)
-def verify_password(username: str, password: str):
-    if username in fake_users_db and fake_users_db[username]["password"] == password:
-        return True
-    return False
+@app.get("/grafana/dashboards")
+def get_dashboards():
+    response = requests.get(f"{GRAFANA_API_URL}/search", headers=headers)
+    return response.json()
 
-# Dependency to get the current user
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    # In a real app, verify the token, e.g., using JWT
-    if token == "dummy_token_for_user1":
-        return "user1"
-    raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+@app.get("/prometheus/query")
+def query_prometheus(query: str, start: str = None, end: str = None, step: str = None):
+    params = {"query": query}
+    if start and end and step:
+        params.update({"start": start, "end": end, "step": step})
+    response = requests.get(PROMETHEUS_API_URL, params=params)
+    return response.json()
 
-# Models for API input/output
-class QueryRequest(BaseModel):
-    query: str
-    name: str
+def analyze_data(prometheus_data):
+    uptime = prometheus_data["data"]["result"]
+    downtime_periods = []
+    for data_point in uptime:
+        timestamp, value = data_point["value"]
+        if float(value) == 0:
+            downtime_periods.append(timestamp)
+    return {"downtime_periods": downtime_periods}
 
-class PrometheusQueryResponse(BaseModel):
-    status: str
-    data: dict
+@app.get("/device/info")
+def get_device_info():
+    query = 'up{job="node_exporter"}'
+    prometheus_response = query_prometheus(query)
+    info = analyze_data(prometheus_response)
+    return info
 
-class SystemActivityResponse(BaseModel):
-    active_time_percentage: float
-    total_time: int
-
-# Helper function to read and write to the queries file
-def load_queries():
-    try:
-        with open(QUERY_FILE, "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {}
-
-def save_queries(queries: dict):
-    with open(QUERY_FILE, "w") as f:
-        json.dump(queries, f, indent=4)
-
-# Endpoint for querying Prometheus
-@app.get("/query/{query_name}", response_model=PrometheusQueryResponse)
-async def query_prometheus(query_name: str, user: str = Depends(get_current_user)):
-    # Load the stored queries
-    queries = load_queries()
-
-    if query_name in queries:
-        query = queries[query_name]
+def calculate_start_time(n: int, period: str) -> str:
+    """Helper function to calculate the start time based on the last n (minutes/days/months/years)"""
+    now = datetime.utcnow()
+    if period == 'minute':
+        delta = timedelta(minutes=n)
+    elif period == 'hour':
+        delta = timedelta(hours=n)
+    elif period == 'day':
+        delta = timedelta(days=n)
+    elif period == 'month':
+        delta = timedelta(days=30*n)
+    elif period == 'year':
+        delta = timedelta(days=365*n)
     else:
-        raise HTTPException(status_code=404, detail="Query not found")
+        raise ValueError("Invalid period, must be one of: minute, day, month, year")
 
-    # Send the query to Prometheus
-    response = requests.get(PROMETHEUS_URL, params={"query": query})
-    data = response.json()
+    start_time = now - delta
+    return start_time.isoformat() + "Z"
 
-    if data["status"] == "error":
-        raise HTTPException(status_code=500, detail="Error querying Prometheus")
+@app.get("/prometheus/device_info")
+def get_device_info(n: int = 60, metrics: dict = None, period: str = Query("minute", enum=["minute", "hour", "day", "month", "year"]), step: str = "60s"):
+    step_ts = int(step[:-1])
+    try:
+        start_time = calculate_start_time(n, period)
+    except ValueError as e:
+        return {"error": str(e)}
 
-    return PrometheusQueryResponse(status="success", data=data["data"])
+    end_time = datetime.utcnow().isoformat() + "Z"
 
-# Endpoint for submitting a new query or updating an existing one
-@app.post("/query", response_model=str)
-async def submit_query(query_request: QueryRequest, user: str = Depends(get_current_user)):
-    # Load existing queries
-    queries = load_queries()
+    if metrics is None: metrics = {
+        "up":  "up",
+        "cpu_usage": "rate(node_cpu_seconds_total{mode!='idle'}[5m])",
+        "memory_available": "(node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100",
+        "disk_io": "rate(node_disk_io_time_seconds_total[5m])",
+        "network_errors": "rate(node_network_receive_errs_total[5m]) + rate(node_network_transmit_errs_total[5m])"
+    }
 
-    # Update or add the new query
-    queries[query_request.name] = query_request.query
-    save_queries(queries)
+    instance_data = {}
 
-    return f"Query '{query_request.name}' has been added/updated successfully."
+    for metric_name, query in metrics.items():
+        params = {
+            "query": query,
+            "start": start_time,
+            "end": end_time,
+            "step": step
+        }
 
-# Custom endpoint to measure system activity
-@app.get("/system/activity", response_model=SystemActivityResponse)
-async def system_activity(user: str = Depends(get_current_user)):
-    # For example purposes, let's assume the system has been active for 80% of the time.
-    active_time_percentage = 80.0
-    total_time = 3600  # In seconds, e.g., 1 hour
+        response = requests.get(f"{PROMETHEUS_API_URL}/query_range", params=params)
+        if response.status_code != 200:
+            return {"error": response.text}
 
-    return SystemActivityResponse(
-        active_time_percentage=active_time_percentage,
-        total_time=total_time
-    )
+        data = response.json()
+        for result in data['data']['result']:
+            instance = result['metric']['instance']
+            
+            if instance not in instance_data:
+                instance_data[instance] = {
+                    "metrics": {}
+                }
+            
+            last_ts = 0
+            for value in result['values']:
+                timestamp = value[0]
+                # print(timestamp, last_ts)
+                # while timestamp-step_ts != last_ts:
+                    
+                metric_value = value[1]
+                formatted_timestamp = format_date(timestamp)
 
-# Endpoint for custom Prometheus queries (allow users to specify their own)
-@app.post("/custom-query", response_model=PrometheusQueryResponse)
-async def custom_query(query: str, user: str = Depends(get_current_user)):
-    # Send custom query to Prometheus
-    response = requests.get(PROMETHEUS_URL, params={"query": query})
-    data = response.json()
+                if formatted_timestamp not in instance_data[instance]["metrics"]:
+                    instance_data[instance]["metrics"][formatted_timestamp] = {}
 
-    if data["status"] == "error":
-        raise HTTPException(status_code=500, detail="Error querying Prometheus")
+                instance_data[instance]["metrics"][formatted_timestamp][metric_name] = metric_value
+                last_ts = timestamp
 
-    return PrometheusQueryResponse(status="success", data=data["data"])
+    final_data = []
+    for instance, data in instance_data.items():
+        instance_summary = {
+            "instance": instance,
+            "metrics": []
+        }
+
+        for timestamp, metrics_at_time in sorted(data["metrics"].items()):
+            metrics_entry = {
+                "timestamp": timestamp
+            }
+            metrics_entry.update(metrics_at_time)
+            instance_summary["metrics"].append(metrics_entry)
+
+        if "up" in metrics_at_time:
+            uptime_data = [entry["up"] for entry in instance_summary["metrics"]]
+            total_time = len(uptime_data) * step_ts
+            uptime_time = sum([1 for entry in uptime_data if entry == "1"])
+            uptime_percentage = (uptime_time / len(uptime_data)) * 100 if len(uptime_data) > 0 else 0
+
+            instance_summary["uptime"] = {
+                "total_time_seconds": total_time,
+                "uptime_time_seconds": uptime_time * step_ts,
+                "uptime_percentage": uptime_percentage
+            }
+
+        final_data.append(instance_summary)
+
+    return final_data
+
+def format_result(result_data: dict):
+    return None
+
+def format_date(date: float):
+    return datetime.fromtimestamp(int(float(date))).isoformat() + "Z"

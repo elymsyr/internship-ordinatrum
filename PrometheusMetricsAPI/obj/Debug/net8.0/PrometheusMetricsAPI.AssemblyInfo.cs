@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PrometheusMetricsAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+010533cfa8f70b65a271e94b570827b9b76c41ef")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7c14ea94c9a109167ad7333a57eee8076e5dd0ce")]
 [assembly: System.Reflection.AssemblyProductAttribute("PrometheusMetricsAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PrometheusMetricsAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
