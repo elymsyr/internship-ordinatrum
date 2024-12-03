@@ -39,3 +39,96 @@ chmod +x add_source_n_dashboard.sh.sh
 ```
 
 *If you get any error related to the data source uid, be sure that the data source uid is same with the one in the dashboard json files. Create a new datasource with hand and find data source uid by checking the new data source's JSON. Change the data source uid in the dashboard1.json and dashboard2.json files. Import files to Grafana again.*
+
+
+## API Documentation
+
+### Endpoints
+
+#### `/grafana/dashboards`
+
+- **Method**: `GET`
+- **Description**: Fetch the list of Grafana dashboards.
+- **Response**:
+    ```json
+    [
+        {
+            "id": 1,
+            "title": "Dashboard 1",
+            "uri": "/dashboard/db/dashboard-1"
+        },
+        {
+            "id": 2,
+            "title": "Dashboard 2",
+            "uri": "/dashboard/db/dashboard-2"
+        }
+    ]
+    ```
+
+#### `/prometheus/query`
+
+- **Method**: `GET`
+- **Description**: Query Prometheus data using the provided query and optional time range.
+- **Query Parameters**:
+    - `query`: PromQL query (required).
+    - `start`: Start time of the query (optional, in ISO format or relative time, e.g., '10minute').
+    - `end`: End time of the query (optional, default is 'now').
+    - `step`: Step duration for data points (optional, e.g., '60s').
+- **Response**:
+    ```json
+    {
+        "status": "success",
+        "data": {
+            "result": [
+                {
+                    "metric": {"__name__": "up", "instance": "192.168.1.1"},
+                    "values": [
+                        [1635398640, "1"],
+                        [1635398700, "0"]
+                    ]
+                }
+            ]
+        }
+    }
+    ```
+
+#### `/prometheus/device_info`
+
+- **Method**: `GET`
+- **Description**: Fetch Prometheus data for specific device metrics over a time range.
+- **Query Parameters**:
+    - `start`: Start time for the data query (optional, default is '30minute').
+    - `end`: End time for the data query (optional, default is 'now').
+    - `metrics`: Dictionary of Prometheus queries (optional).
+    - `step`: Step duration for data points (optional, default is '60s').
+- **Response**:
+    ```json
+    [
+        {
+            "instance": "192.168.1.1",
+            "metrics": [
+                {
+                    "timestamp": "2024-12-03 12:30:00",
+                    "up": 1,
+                    "cpu_usage": "0.03",
+                    "memory_available": "50.1",
+                    "disk_io": "0.002",
+                    "network_errors": "0.0005"
+                },
+                {
+                    "timestamp": "2024-12-03 12:31:00",
+                    "up": 0,
+                    "cpu_usage": "0.04",
+                    "memory_available": "50.0",
+                    "disk_io": "0.003",
+                    "network_errors": "0.0006"
+                }
+            ],
+            "uptime": {
+                "total_time_seconds": 120,
+                "uptime_time_seconds": 60,
+                "uptime_percentage": 50
+            }
+        }
+    ]
+    ```
