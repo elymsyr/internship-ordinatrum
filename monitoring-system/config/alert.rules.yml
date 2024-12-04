@@ -12,13 +12,13 @@ groups:
 - name: cpu_usage_test
   rules:
   - alert: CPUover1_Test
-    expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 1
-    for: 1m
+    expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 0
+    for: 10s
     labels:
       severity: warning
     annotations:
-      summary: "High CPU usage on instance {{ $labels.instance }}"
-      description: "CPU usage is above 90% for more than 5 minutes on {{ $labels.instance }}."
+      summary: "Test: CPU Usage is found. {{ $labels.instance }}"
+      description: "Test: CPU Usage is found for 10 seconds. {{ $labels.instance }}."
 - name: memory_usage
   rules:
   - alert: HighMemoryUsage

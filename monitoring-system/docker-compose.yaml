@@ -1,15 +1,12 @@
-# version: "3.8"
+version: "3.8"
 
 volumes:
-
   prometheus-data:
     driver: local
-
   grafana-data:
     driver: local
 
 services:
-
   prometheus:
     image: docker.io/prom/prometheus:v2.53.0
     container_name: prometheus
@@ -20,6 +17,8 @@ services:
       - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
       - prometheus-data:/prometheus
       - ./config/alert.rules.yml:/etc/prometheus/alert.rules.yml
+    networks:
+      - monitoring
     restart: unless-stopped
 
   grafana:
@@ -33,6 +32,8 @@ services:
     environment:
       - GF_SMTP_USER=${SMTP_USER}
       - GF_SMTP_PASSWORD=${SMTP_PASSWORD}
+    networks:
+      - monitoring
     restart: unless-stopped
 
   node_exporter:
@@ -43,6 +44,8 @@ services:
     restart: unless-stopped
     volumes:
       - /:/host:ro,rslave
+    networks:
+      - monitoring
 
   node_exporter_2:
     image: quay.io/prometheus/node-exporter:v1.8.1
@@ -52,6 +55,8 @@ services:
     restart: unless-stopped
     volumes:
       - /:/host:ro,rslave
+    networks:
+      - monitoring
 
   node_exporter_3:
     image: quay.io/prometheus/node-exporter:v1.8.1
@@ -61,6 +66,8 @@ services:
     restart: unless-stopped
     volumes:
       - /:/host:ro,rslave
+    networks:
+      - monitoring
 
   telegraf:
     image: telegraf:latest
@@ -70,6 +77,8 @@ services:
       - ./logs/app.log:/var/log/app.log:ro
     ports:
       - "9273:9273"
+    networks:
+      - monitoring
     restart: unless-stopped
 
   grok_exporter:
@@ -80,4 +89,35 @@ services:
       - ./logs/app.log:/var/log/app.log:ro
     ports:
       - "9144:9144"
+    networks:
+      - monitoring
     restart: unless-stopped
+
+  alertmanager:
+    image: prom/alertmanager:v0.24.0
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./config/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./config/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  fastapi:
+    build:
+      context: ./API  # Path to the directory containing the Dockerfile
+      dockerfile: Dockerfile  # The Dockerfile to use
+    container_name: fastapi
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./API/app:/app  # Mount the local app directory into the container
+    networks:
+      - monitoring
+    restart: unless-stopped  # Ensures the service restarts unless manually stopped
+
+networks:
+  monitoring:
+    driver: bridge

@@ -1,5 +1,5 @@
-import requests, re
-from fastapi import FastAPI
+import requests, re, logging
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 from datetime import datetime
 from helper import *
 
@@ -200,3 +200,33 @@ def root():
         "note": "For detailed information on each endpoint, refer to the documentation: github.com/elymsyr/internship-ordinatrum"
     }
 
+alerts = []
+active_connections = []
+
+@app.post("/alerts/jobs", tags=["Alerts"])
+async def receive_alert(request: Request):
+    # Parse the incoming JSON data
+    payload = await request.json()
+
+    # Log the received alert payload
+    logging.info(f"Received alert: {payload}")
+
+    # Append the payload directly to the alerts list
+    alerts.append(payload)
+
+    # Send the alert to all connected WebSocket clients
+    for connection in active_connections:
+        await connection.send_json(payload)
+    
+    return {"status": "Alert received", "data": payload}
+
+@app.websocket("/ws/alerts")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    active_connections.append(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await websocket.send_text(f"Message text: {data}")
+    except WebSocketDisconnect:
+        active_connections.remove(websocket)

@@ -1,6 +1,8 @@
 # from keys import API_KEY
 import re
 from datetime import datetime, timedelta
+from pydantic import BaseModel
+from typing import Union, Any, Dict, List
 
 GRAFANA_API_URL = "http://admin:admin@localhost:3000/api"
 # GRAFANA_API_KEY = f"Bearer {API_KEY}"
@@ -61,6 +63,11 @@ metrics = {
         ]
     }
 }
+
+
+
+
+
 
 def analyze_data(prometheus_data):
     uptime = prometheus_data["data"]["result"]

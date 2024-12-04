@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .alert {
+            background-color: #ffdddd;
+            border-left: 5px solid red;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .alert p {
+            margin: 0;
+        }
+        .alert.new {
+            background-color: #fdd;
+            animation: fadein 1s;
+        }
+        @keyframes fadein {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Real-Time Alerts</h1>
+    <div id="alertContainer"></div>
+
+    <script>
+        const ws = new WebSocket("ws://localhost:8000/ws/alerts");
+        const alertContainer = document.getElementById("alertContainer");
+
+        ws.onmessage = function(event) {
+            const alertData = JSON.parse(event.data);
+            displayAlert(alertData);
+        };
+
+        function displayAlert(data) {
+            const alertElement = document.createElement("div");
+            alertElement.classList.add("alert", "new");
+
+            const alertContent = document.createElement("p");
+            alertContent.textContent = JSON.stringify(data, null, 2); // Display alert data as formatted JSON
+            alertElement.appendChild(alertContent);
+
+            alertContainer.prepend(alertElement);
+
+            // Remove alert after 5 seconds
+            setTimeout(() => {
+                alertElement.classList.remove("new");
+            }, 5000);
+        }
+    </script>
+
+</body>
+</html>
