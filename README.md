@@ -55,7 +55,7 @@ echo "To access Grafana, use the default login credentials:"
 echo "Username: admin"
 echo "Password: admin"
 
-
+# Wait a couple of minutes until the alert is triggered. You will see the notification here.
 xdg-open monitoring-system/API/app/alert_api_test.html
 
 xdg-open http://localhost:3000/
