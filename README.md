@@ -15,8 +15,6 @@ This project sets up a comprehensive monitoring system using Docker Compose, com
 
 - Docker (version 27.3.1, build ce12230)
 - Docker Compose (version 1.29.2, build unknown)
-- Python 3.13
-- Conda 24.9.x or newer
 
 ## Installation
 
