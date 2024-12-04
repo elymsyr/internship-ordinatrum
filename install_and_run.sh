@@ -20,20 +20,12 @@ echo "Username: admin"
 echo "Password: admin"
 
 
-ENV_NAME="monitoring"
+xdg-open monitoring-system/API/app/alert_api_test.html
 
-conda create --name $ENV_NAME python=3.13 -y
+xdg-open http://localhost:3000/
+xdg-open http://localhost:9090/
+xdg-open http://localhost:9093/
+xdg-open http://0.0.0.0:8000/docs
 
-conda activate $ENV_NAME
-
-pip install -r requirements.txt
-
-echo "Environment $ENV_NAME has been created and dependencies have been installed."
-
-cd ../API
-uvicorn main:app --reload
-sleep 5
-
-echo "API is running. You can interact with the system via the FastAPI server (http://localhost:8000)."
 
 echo "Installation and setup completed!"

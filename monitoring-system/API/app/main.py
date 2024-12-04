@@ -5,7 +5,7 @@ from helper import *
 
 app = FastAPI()
 
-@app.get("/grafana/dashboards")
+@app.get("/grafana/dashboards", tags=["Grafana"])
 def get_dashboards():
     """
     Fetch the list of Grafana dashboards.
@@ -16,7 +16,7 @@ def get_dashboards():
     response = requests.get(f"{GRAFANA_API_URL}/search") # , headers=headers
     return response.json()
 
-@app.get("/prometheus/query")
+@app.get("/prometheus/query", tags=["Prometheus"])
 def query_prometheus(query: str, start: str = None, end: str = None, step: str = None):
     """
     Query Prometheus data using the provided query and optional time range.
@@ -36,7 +36,7 @@ def query_prometheus(query: str, start: str = None, end: str = None, step: str =
     response = requests.get(f"{PROMETHEUS_API_URL}/query", params=params)
     return response.json()
 
-@app.get("/prometheus/device_info")
+@app.get("/prometheus/device_info", tags=["Prometheus"])
 def get_device_info(
     start: str = "30minute",
     end: str = "now",
@@ -205,6 +205,18 @@ active_connections = []
 
 @app.post("/alerts/jobs", tags=["Alerts"])
 async def receive_alert(request: Request):
+    """
+    Endpoint to receive an alert group via a POST request.
+    
+    This endpoint parses and validates the incoming JSON payload using the AlertGroup model,
+    logs the received data, appends it to the alert list, and broadcasts it to all active WebSocket
+    clients.
+
+    - **alert_group**: A validated `AlertGroup` model containing the alert information.
+    
+    **Returns:**
+    - A JSON response indicating the status and the alert group data.
+    """
     # Parse and validate the incoming JSON data using the AlertGroup model
     payload = await request.json()
     alert_group = AlertGroup(**payload)  # Use Pydantic to validate and parse the data
@@ -223,6 +235,20 @@ async def receive_alert(request: Request):
 
 @app.websocket("/ws/alerts")
 async def websocket_endpoint(websocket: WebSocket):
+    """
+    WebSocket endpoint for receiving and sending messages related to alerts.
+    
+    This endpoint allows clients to establish a WebSocket connection and receive updates whenever
+    a new alert is received. It also sends back any text data received from the client.
+
+    - Clients can use this endpoint to receive alerts in real-time as they are posted to the `/alerts/jobs` endpoint.
+
+    Example WebSocket interaction:
+    - Client: Sends a message like "Hello Server"
+    - Server: Responds with "Message text: Hello Server"
+    
+    The WebSocket connection is maintained until the client disconnects.
+    """
     await websocket.accept()
     active_connections.append(websocket)
     try:

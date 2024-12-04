@@ -1,7 +1,7 @@
 # from keys import API_KEY
 import re
 from datetime import datetime, timedelta
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, root_validator
 from typing import Union, Any, Dict, List
 
 GRAFANA_API_URL = "http://admin:admin@localhost:3000/api"
@@ -72,6 +72,19 @@ class Alert(BaseModel):
     annotations: Dict[str, str]
     labels: Dict[str, str]
     fingerprint: str
+    extra_fields: Dict[str, Any] = {}
+
+    class Config:
+        extra = "allow"  # Automatically allows extra fields
+
+    @root_validator(pre=True)
+    def capture_extra_fields(cls, values):
+        # Capture any extra fields that are not explicitly defined in the model
+        extra_data = {key: value for key, value in values.items() if key not in cls.__fields__}
+        if extra_data:
+            values['extra_fields'] = extra_data
+        return values
+
 
 class AlertGroup(BaseModel):
     receiver: str
@@ -84,6 +97,18 @@ class AlertGroup(BaseModel):
     common_annotations: Dict[str, str] = Field(alias="commonAnnotations")
     common_labels: Dict[str, str] = Field(alias="commonLabels")
     alerts: List[Alert]
+    extra_fields: Dict[str, Any] = {}
+
+    class Config:
+        extra = "allow"  # Automatically allows extra fields
+
+    @root_validator(pre=True)
+    def capture_extra_fields(cls, values):
+        # Capture any extra fields that are not explicitly defined in the model
+        extra_data = {key: value for key, value in values.items() if key not in cls.__fields__}
+        if extra_data:
+            values['extra_fields'] = extra_data
+        return values
 
 def analyze_data(prometheus_data):
     uptime = prometheus_data["data"]["result"]

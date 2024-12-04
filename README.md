@@ -49,21 +49,6 @@ chmod +x add_source_n_dashboard.sh.sh
 
 - **Method**: `GET`
 - **Description**: Fetch the list of Grafana dashboards.
-- **Response**:
-    ```json
-    [
-        {
-            "id": 1,
-            "title": "Dashboard 1",
-            "uri": "/dashboard/db/dashboard-1"
-        },
-        {
-            "id": 2,
-            "title": "Dashboard 2",
-            "uri": "/dashboard/db/dashboard-2"
-        }
-    ]
-    ```
 
 #### `/prometheus/query`
 
@@ -74,23 +59,6 @@ chmod +x add_source_n_dashboard.sh.sh
     - `start`: Start time of the query (optional, in ISO format or relative time, e.g., '10minute').
     - `end`: End time of the query (optional, default is 'now').
     - `step`: Step duration for data points (optional, e.g., '60s').
-- **Response**:
-    ```json
-    {
-        "status": "success",
-        "data": {
-            "result": [
-                {
-                    "metric": {"__name__": "up", "instance": "192.168.1.1"},
-                    "values": [
-                        [1635398640, "1"],
-                        [1635398700, "0"]
-                    ]
-                }
-            ]
-        }
-    }
-    ```
 
 #### `/prometheus/device_info`
 
@@ -101,34 +69,52 @@ chmod +x add_source_n_dashboard.sh.sh
     - `end`: End time for the data query (optional, default is 'now').
     - `metrics`: Dictionary of Prometheus queries (optional).
     - `step`: Step duration for data points (optional, default is '60s').
-- **Response**:
-    ```json
-    [
-        {
-            "instance": "192.168.1.1",
-            "metrics": [
-                {
-                    "timestamp": "2024-12-03 12:30:00",
-                    "up": 1,
-                    "cpu_usage": "0.03",
-                    "memory_available": "50.1",
-                    "disk_io": "0.002",
-                    "network_errors": "0.0005"
-                },
-                {
-                    "timestamp": "2024-12-03 12:31:00",
-                    "up": 0,
-                    "cpu_usage": "0.04",
-                    "memory_available": "50.0",
-                    "disk_io": "0.003",
-                    "network_errors": "0.0006"
-                }
-            ],
-            "uptime": {
-                "total_time_seconds": 120,
-                "uptime_time_seconds": 60,
-                "uptime_percentage": 50
-            }
-        }
-    ]
+
+#### `/alerts/jobs`
+- **Method**: `POST`
+- **Description**: Receive an alert group and broadcast it to all connected WebSocket clients. The payload is validated using the AlertGroup model, logged, and added to the list of alerts.
+- **Request Body**:
+    ```python
+    class Alert(BaseModel):
+        status: str
+        starts_at: datetime = Field(alias="startsAt")
+        ends_at: datetime = Field(alias="endsAt")
+        generator_url: str = Field(alias="generatorURL")
+        annotations: Dict[str, str]
+        labels: Dict[str, str]
+        fingerprint: str
+        extra_fields: Dict[str, Any] = {}
+        class Config:
+            extra = "allow"
+        @root_validator(pre=True)
+        def capture_extra_fields(cls, values):
+            extra_data = {key: value for key, value in values.items() if key not in cls.__fields__}
+            if extra_data:
+                values['extra_fields'] = extra_data
+            return values
+
+    class AlertGroup(BaseModel):
+        receiver: str
+        status: str
+        external_url: str = Field(alias="externalURL")
+        version: str
+        group_key: str = Field(alias="groupKey")
+        truncated_alerts: int = Field(alias="truncatedAlerts", default=0)
+        group_labels: Dict[str, str] = Field(alias="groupLabels")
+        common_annotations: Dict[str, str] = Field(alias="commonAnnotations")
+        common_labels: Dict[str, str] = Field(alias="commonLabels")
+        alerts: List[Alert]
+        extra_fields: Dict[str, Any] = {}
+        class Config:
+            extra = "allow"
+        @root_validator(pre=True)
+        def capture_extra_fields(cls, values):
+            extra_data = {key: value for key, value in values.items() if key not in cls.__fields__}
+            if extra_data:
+                values['extra_fields'] = extra_data
+            return values
     ```
+
+#### `/ws/alerts`
+- **Method**: `WebSocket`
+- **Description**: WebSocket endpoint for clients to receive real-time alerts. When an alert is posted via /alerts/jobs, it is broadcast to all connected WebSocket clients. The endpoint also allows clients to send messages that the server will echo back.
