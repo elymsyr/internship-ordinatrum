@@ -27,7 +27,7 @@ echo "Username: admin"
 echo "Password: admin"
 
 
-xdg-open monitoring-system/API/app/alert_api_test.html
+xdg-open API/app/alert_api_test.html
 
 xdg-open http://localhost:3000/
 xdg-open http://localhost:9090/
