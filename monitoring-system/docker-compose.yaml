@@ -29,18 +29,10 @@ services:
       - "3000:3000"
     volumes:
       - grafana-data:/var/lib/grafana
-      - ./grafana.ini:/etc/grafana/grafana.ini       # Bind-mount the custom grafana.ini
-      - ./defaults.ini:/usr/share/grafana/conf/defaults.ini  # Bind-mount the custom defaults.ini
-    # environment:
-    #   - GF_SMTP_ENABLED=true
-    #   - GF_SMTP_HOST=smtp.example.com:587
-    #   - GF_SMTP_USER=grafanaalerttestordinatrum@gmail.com
-    #   - GF_SMTP_PASSWORD=12345678A!
-    #   - GF_SMTP_FROM_ADDRESS=grafanaalerttestordinatrum@gmail.com
-    #   - GF_SMTP_SKIP_VERIFY=true
-    #   - GF_SECURITY_ADMIN_USER=adminOrdinatrum
-    #   - GF_SECURITY_ADMIN_PASSWORD=Ilovearcbox!100
-      # - GF_SECURITY_ALLOW_EMBEDDING=true
+      - ./config/grafana.ini:/etc/grafana/grafana.ini       # Bind-mount the custom grafana.ini
+    environment:
+      - GF_SMTP_USER=${SMTP_USER}
+      - GF_SMTP_PASSWORD=${SMTP_PASSWORD}
     restart: unless-stopped
 
   node_exporter:

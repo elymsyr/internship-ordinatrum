@@ -9,6 +9,16 @@ groups:
     annotations:
       summary: "High CPU usage on instance {{ $labels.instance }}"
       description: "CPU usage is above 90% for more than 5 minutes on {{ $labels.instance }}."
+- name: cpu_usage_test
+  rules:
+  - alert: CPUover1_Test
+    expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 1
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage on instance {{ $labels.instance }}"
+      description: "CPU usage is above 90% for more than 5 minutes on {{ $labels.instance }}."
 - name: memory_usage
   rules:
   - alert: HighMemoryUsage
