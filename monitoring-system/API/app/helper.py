@@ -1,7 +1,7 @@
 # from keys import API_KEY
 import re
 from datetime import datetime, timedelta
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Union, Any, Dict, List
 
 GRAFANA_API_URL = "http://admin:admin@localhost:3000/api"
@@ -64,10 +64,26 @@ metrics = {
     }
 }
 
+class Alert(BaseModel):
+    status: str
+    starts_at: datetime = Field(alias="startsAt")
+    ends_at: datetime = Field(alias="endsAt")
+    generator_url: str = Field(alias="generatorURL")
+    annotations: Dict[str, str]
+    labels: Dict[str, str]
+    fingerprint: str
 
-
-
-
+class AlertGroup(BaseModel):
+    receiver: str
+    status: str
+    external_url: str = Field(alias="externalURL")
+    version: str
+    group_key: str = Field(alias="groupKey")
+    truncated_alerts: int = Field(alias="truncatedAlerts", default=0)
+    group_labels: Dict[str, str] = Field(alias="groupLabels")
+    common_annotations: Dict[str, str] = Field(alias="commonAnnotations")
+    common_labels: Dict[str, str] = Field(alias="commonLabels")
+    alerts: List[Alert]
 
 def analyze_data(prometheus_data):
     uptime = prometheus_data["data"]["result"]

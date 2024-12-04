@@ -205,20 +205,21 @@ active_connections = []
 
 @app.post("/alerts/jobs", tags=["Alerts"])
 async def receive_alert(request: Request):
-    # Parse the incoming JSON data
+    # Parse and validate the incoming JSON data using the AlertGroup model
     payload = await request.json()
+    alert_group = AlertGroup(**payload)  # Use Pydantic to validate and parse the data
 
     # Log the received alert payload
-    logging.info(f"Received alert: {payload}")
+    logging.info(f"Received alert group: {alert_group}")
 
-    # Append the payload directly to the alerts list
-    alerts.append(payload)
+    # Append the parsed alert group to the alerts list
+    alerts.append(alert_group)
 
     # Send the alert to all connected WebSocket clients
     for connection in active_connections:
         await connection.send_json(payload)
     
-    return {"status": "Alert received", "data": payload}
+    return {"status": "Alert received", "data": alert_group.dict()}
 
 @app.websocket("/ws/alerts")
 async def websocket_endpoint(websocket: WebSocket):
