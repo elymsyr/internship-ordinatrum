@@ -19,6 +19,7 @@ services:
     volumes:
       - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
       - prometheus-data:/prometheus
+      - ./config/alert.rules.yml:/etc/prometheus/alert.rules.yml
     restart: unless-stopped
 
   grafana:

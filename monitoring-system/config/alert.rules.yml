@@ -1,0 +1,71 @@
+groups:
+- name: cpu_usage
+  rules:
+  - alert: HighCPUUsage
+    expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage on instance {{ $labels.instance }}"
+      description: "CPU usage is above 90% for more than 5 minutes on {{ $labels.instance }}."
+- name: memory_usage
+  rules:
+  - alert: HighMemoryUsage
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 90
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage on instance {{ $labels.instance }}"
+      description: "Memory usage is above 90% for more than 5 minutes on {{ $labels.instance }}."
+- name: disk_usage
+  rules:
+  - alert: HighDiskUsage
+    expr: (node_filesystem_size_bytes{fstype!~"tmpfs|aufs"} - node_filesystem_free_bytes{fstype!~"tmpfs|aufs"}) / node_filesystem_size_bytes{fstype!~"tmpfs|aufs"} * 100 > 80
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High disk usage on instance {{ $labels.instance }}"
+      description: "Disk usage is above 80% on {{ $labels.instance }}. Filesystem: {{ $labels.mountpoint }}."
+- name: instance_health
+  rules:
+  - alert: InstanceDown
+    expr: up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Instance {{ $labels.instance }} is down"
+      description: "{{ $labels.instance }} is down for more than 1 minute."
+- name: load_average
+  rules:
+  - alert: HighLoadAverage
+    expr: node_load5 > 10
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High load average on {{ $labels.instance }}"
+      description: "The 5-minute load average is higher than 10 on {{ $labels.instance }}."
+- name: file_descriptors
+  rules:
+  - alert: FileDescriptorsExhaustion
+    expr: node_filefd_allocated{job="node"} / node_filefd_maximum{job="node"} * 100 > 80
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "File descriptors exhaustion on {{ $labels.instance }}"
+      description: "File descriptor usage is above 80% on {{ $labels.instance }}."
+- name: swap_usage
+  rules:
+  - alert: HighSwapUsage
+    expr: node_memory_SwapUsed_bytes / node_memory_SwapTotal_bytes * 100 > 50
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High swap usage on {{ $labels.instance }}"
+      description: "Swap usage is above 50% on {{ $labels.instance }}."

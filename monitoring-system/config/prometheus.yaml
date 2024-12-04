@@ -19,6 +19,9 @@ scrape_configs:
     static_configs:
       - targets: ['grok_exporter:9144']
 
+rule_files:
+  - /etc/prometheus/alert.rules.yml
+
 # groups:
 #   - name: cpu_usage_alerts
 #     rules:
