@@ -32,6 +32,8 @@ services:
     environment:
       - GF_SMTP_USER=${SMTP_USER}
       - GF_SMTP_PASSWORD=${SMTP_PASSWORD}
+      - GF_SMTP_HOST=${SMTP_HOST}
+      - GF_SMTP_FROM_ADRESS=${SMTP_FROM_ADRESS}
     networks:
       - monitoring
     restart: unless-stopped

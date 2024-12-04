@@ -18,7 +18,7 @@ This project sets up a comprehensive monitoring system using Docker Compose, com
 
 ## Installation
 
-#### 1. Run [`.sh file`](install_and_run.sh) to clone the repository and start the docker-compose and the api. This also creates conda environment.
+#### 1. Run [`.sh file`](install_and_run.sh) to clone the repository and start the docker-compose with the api.
 
 ##### Make the Script Executable: If you haven’t done so already, run:
 
@@ -33,14 +33,21 @@ set -e
 
 echo "Cloning the repository..."
 git clone https://github.com/elymsyr/internship-ordinatrum.git
-cd monitoring-system
+cd internship-ordinatrum/monitoring-system
+
+# SET YOUR SMTP SETTINGS
+
+echo "SMTP_USER=myuser.com" > .env
+echo "SMTP_PASSWORD=mypassword" >> .env
+echo "SMTP_HOST=smtp.example.com:587" >> .env
+echo "SMTP_FROM_ADRESS=example@gmail.com" >> .env
 
 echo "Building and starting Docker containers..."
 docker-compose up --build -d
 
 echo "Waiting for services to start..."
 sleep 10
-docker-compose up ps
+docker-compose ps
 
 echo "Docker containers are running. You can access Grafana at http://localhost:3000"
 
@@ -58,6 +65,7 @@ xdg-open http://0.0.0.0:8000/docs
 
 
 echo "Installation and setup completed!"
+
 ```
 
 #### 2. Run [`.sh file`](add_source_n_dashboard.sh) to add Prometheus as the data source and import the [`dashboard1`](monitoring-system/dashboards/dashboard1.json) to Grafana.
