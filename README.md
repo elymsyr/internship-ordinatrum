@@ -5,7 +5,7 @@ This project sets up a comprehensive monitoring system using Docker Compose, com
 ## Features
 
 - **System Resource Monitoring:** Uses Node Exporter and Telegraf to collect metrics from multiple nodes.
-- **Visualization:** Grafana for real-time visualization and dashboards.
+- **Visualization:** Grafana for real-time visualization and dashboards. API and WebSockets to interpret the data or alerts and visualize in real-time.
 - **Log Parsing:** Grok Exporter parses logs and exports metrics to Prometheus.
 - **Prometheus Integration:** Collects and stores time-series data for monitoring.
 - **Custom API:** A Python FastAPI that interacts with Grafana and Prometheus to provide device monitoring and analysis.
@@ -25,6 +25,39 @@ This project sets up a comprehensive monitoring system using Docker Compose, com
 ```
 chmod +x install_and_run.sh
 ./install_and_run.sh
+```
+```bash
+#!/bin/bash
+
+set -e
+
+echo "Cloning the repository..."
+git clone https://github.com/elymsyr/internship-ordinatrum.git
+cd monitoring-system
+
+echo "Building and starting Docker containers..."
+docker-compose up --build -d
+
+echo "Waiting for services to start..."
+sleep 10
+docker-compose up ps
+
+echo "Docker containers are running. You can access Grafana at http://localhost:3000"
+
+echo "To access Grafana, use the default login credentials:"
+echo "Username: admin"
+echo "Password: admin"
+
+
+xdg-open monitoring-system/API/app/alert_api_test.html
+
+xdg-open http://localhost:3000/
+xdg-open http://localhost:9090/
+xdg-open http://localhost:9093/
+xdg-open http://0.0.0.0:8000/docs
+
+
+echo "Installation and setup completed!"
 ```
 
 #### 2. Run [`.sh file`](add_source_n_dashboard.sh) to add Prometheus as the data source and import the [`dashboard1`](monitoring-system/dashboards/dashboard1.json) to Grafana.
