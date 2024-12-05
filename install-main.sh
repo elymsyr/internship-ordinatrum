@@ -6,7 +6,7 @@ echo "Cloning the repository..."
 git clone https://github.com/elymsyr/internship-ordinatrum.git
 cd internship-ordinatrum/monitoring-system
 
-# SET YOUR SMTP SETTINGS IF YOU USE
+# SET YOUR SMTP SETTINGS IF YOU USE MAIL NOTIFICATION
 
 echo "SMTP_USER=myuser.com" > .env
 echo "SMTP_PASSWORD=mypassword" >> .env
