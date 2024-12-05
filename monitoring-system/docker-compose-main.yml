@@ -12,10 +12,13 @@ services:
     container_name: prometheus
     ports:
       - 9090:9090
-    command: "--config.file=/etc/prometheus/prometheus.yaml"
+    command: 
+      - "--config.file=/etc/prometheus/prometheus.yaml"
+      - '--storage.tsdb.retention.time=30d'  # Keep data for 30 days
+      - '--storage.tsdb.path=/prometheus'  # Path for data storage
     volumes:
       - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
-      - prometheus-data:/prometheus
+      - ./prometheus-data:/prometheus
       - ./config/alert.rules.yml:/etc/prometheus/alert.rules.yml
     networks:
       - monitoring
@@ -37,39 +40,6 @@ services:
     networks:
       - monitoring
     restart: unless-stopped
-
-  node_exporter:
-    image: quay.io/prometheus/node-exporter:v1.8.1
-    container_name: node_exporter
-    command: "--path.rootfs=/host"
-    pid: host
-    restart: unless-stopped
-    volumes:
-      - /:/host:ro,rslave
-    networks:
-      - monitoring
-
-  node_exporter_2:
-    image: quay.io/prometheus/node-exporter:v1.8.1
-    container_name: node_exporter_2
-    command: "--path.rootfs=/host"
-    pid: host
-    restart: unless-stopped
-    volumes:
-      - /:/host:ro,rslave
-    networks:
-      - monitoring
-
-  node_exporter_3:
-    image: quay.io/prometheus/node-exporter:v1.8.1
-    container_name: node_exporter_3
-    command: "--path.rootfs=/host"
-    pid: host
-    restart: unless-stopped
-    volumes:
-      - /:/host:ro,rslave
-    networks:
-      - monitoring
 
   telegraf:
     image: telegraf:latest
