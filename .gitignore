@@ -6,7 +6,6 @@ Others/
 keys.py
 prometheus-data/
 
-
 # C extensions
 *.so
 

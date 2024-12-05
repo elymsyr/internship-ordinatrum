@@ -14,8 +14,8 @@ services:
       - 9090:9090
     command: 
       - "--config.file=/etc/prometheus/prometheus.yaml"
-      - '--storage.tsdb.retention.time=30d'
-      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'  # Keep data for 30 days
+      - '--storage.tsdb.path=/prometheus'  # Path for data storage
     volumes:
       - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
       - ./prometheus-data:/prometheus
@@ -41,9 +41,9 @@ services:
       - monitoring
     restart: unless-stopped
 
-  node_exporter:
+  node_exporter1:
     image: quay.io/prometheus/node-exporter:v1.8.1
-    container_name: node_exporter
+    container_name: node_exporter1
     command: "--path.rootfs=/host"
     pid: host
     restart: unless-stopped
@@ -52,20 +52,9 @@ services:
     networks:
       - monitoring
 
-  node_exporter_2:
+  node_exporter2:
     image: quay.io/prometheus/node-exporter:v1.8.1
-    container_name: node_exporter_2
-    command: "--path.rootfs=/host"
-    pid: host
-    restart: unless-stopped
-    volumes:
-      - /:/host:ro,rslave
-    networks:
-      - monitoring
-
-  node_exporter_3:
-    image: quay.io/prometheus/node-exporter:v1.8.1
-    container_name: node_exporter_3
+    container_name: node_exporter2
     command: "--path.rootfs=/host"
     pid: host
     restart: unless-stopped
