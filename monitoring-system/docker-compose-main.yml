@@ -41,9 +41,20 @@ services:
       - monitoring
     restart: unless-stopped
 
-  node_exporter:
+  node_exporter1:
     image: quay.io/prometheus/node-exporter:v1.8.1
-    container_name: node_exporter
+    container_name: node_exporter1
+    command: "--path.rootfs=/host"
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - /:/host:ro,rslave
+    networks:
+      - monitoring
+
+  node_exporter2:
+    image: quay.io/prometheus/node-exporter:v1.8.1
+    container_name: node_exporter2
     command: "--path.rootfs=/host"
     pid: host
     restart: unless-stopped

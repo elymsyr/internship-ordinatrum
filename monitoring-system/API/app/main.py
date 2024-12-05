@@ -35,7 +35,7 @@ def get_dashboard_by_uid(uid: str):
         return {"error": f"Dashboard with UID {uid} not found", "status_code": response.status_code}
 
 @app.get("/prometheus/query", tags=["Prometheus"])
-def query_prometheus(query: str = 'node_cpu_seconds_total', start: str = '2024-12-01T00:00:00Z', end: str = 'now', step: str = '60s'):
+def query_prometheus(query: str = 'node_cpu_seconds_total{instance="node_exporter2:9100"}', start: str = '2024-12-01T00:00:00Z', end: str = 'now', step: str = '60s'):
     """
     Query Prometheus data using the provided query and optional time range.
 
@@ -159,14 +159,14 @@ def get_device_info(
                         formatted_timestamp = format_date(start_timestamp_follow)
                         if formatted_timestamp not in instance_data[instance]["metrics"]:
                             instance_data[instance]["metrics"][formatted_timestamp] = {}
-                        instance_data[instance]["metrics"][formatted_timestamp]['up'] = 0
+                        instance_data[instance]["metrics"][formatted_timestamp]['up'] = "0"
 
                 while last_timestamp is not None and timestamp - step_timestamp != last_timestamp:
                     last_timestamp += step_timestamp
                     formatted_timestamp = format_date(last_timestamp)
                     if formatted_timestamp not in instance_data[instance]["metrics"]:
                         instance_data[instance]["metrics"][formatted_timestamp] = {}
-                    instance_data[instance]["metrics"][formatted_timestamp]['up'] = 0
+                    instance_data[instance]["metrics"][formatted_timestamp]['up'] = "0"
 
                 metric_value = value[1]
                 formatted_timestamp = format_date(timestamp)
