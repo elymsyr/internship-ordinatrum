@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 from pydantic import BaseModel, Field, root_validator
 from typing import Union, Any, Dict, List
 
-GRAFANA_API_URL = "http://admin:admin@localhost:3000/api"
+GRAFANA_API_URL = "http://admin:admin@grafana:3000/api"
 # GRAFANA_API_KEY = f"Bearer {API_KEY}"
-PROMETHEUS_API_URL = "http://localhost:9090/api/v1"
+PROMETHEUS_API_URL = "http://prometheus:9090/api/v1"
 
 # headers = {
 #     "Authorization": GRAFANA_API_KEY,

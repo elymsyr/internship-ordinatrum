@@ -13,11 +13,29 @@ def get_dashboards():
     Returns:
         list: A list of Grafana dashboards in JSON format.
     """
-    response = requests.get(f"{GRAFANA_API_URL}/search") # , headers=headers
+    response = requests.get(f"{GRAFANA_API_URL}/search")
     return response.json()
 
+@app.get("/grafana/dashboard/{uid}", tags=["Grafana"])
+def get_dashboard_by_uid(uid: str):
+    """
+    Fetch a Grafana dashboard by UID.
+
+    Args:
+        uid (str): The UID of the Grafana dashboard.
+
+    Returns:
+        dict: JSON response with the dashboard details, including panels.
+    """
+    response = requests.get(f"{GRAFANA_API_URL}/dashboards/uid/{uid}")
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return {"error": f"Dashboard with UID {uid} not found", "status_code": response.status_code}
+
 @app.get("/prometheus/query", tags=["Prometheus"])
-def query_prometheus(query: str, start: str = None, end: str = None, step: str = None):
+def query_prometheus(query: str = 'node_cpu_seconds_total', start: str = '2024-12-01T00:00:00Z', end: str = 'now', step: str = '60s'):
     """
     Query Prometheus data using the provided query and optional time range.
 
@@ -31,8 +49,9 @@ def query_prometheus(query: str, start: str = None, end: str = None, step: str =
         dict: The Prometheus query result in JSON format.
     """
     params = {"query": query}
-    if start and end and step:
-        params.update({"start": start, "end": end, "step": step})
+    if end == "now":
+        end = datetime.utcnow().isoformat() + "Z"
+    params.update({"start": start, "end": end, "step": step})
     response = requests.get(f"{PROMETHEUS_API_URL}/query", params=params)
     return response.json()
 

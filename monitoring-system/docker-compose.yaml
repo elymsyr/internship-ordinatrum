@@ -28,7 +28,7 @@ services:
       - "3000:3000"
     volumes:
       - grafana-data:/var/lib/grafana
-      - ./config/grafana.ini:/etc/grafana/grafana.ini       # Bind-mount the custom grafana.ini
+      - ./config/grafana.ini:/etc/grafana/grafana.ini
     environment:
       - GF_SMTP_USER=${SMTP_USER}
       - GF_SMTP_PASSWORD=${SMTP_PASSWORD}
