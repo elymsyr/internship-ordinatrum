@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 Others/
 keys.py
+prometheus-data/
 
 # C extensions
 *.so
