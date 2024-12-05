@@ -3,16 +3,11 @@ version: "3.8"
 services:
   node_exporter:
     image: quay.io/prometheus/node-exporter:v1.8.1
-    container_name: node_exporter_device1
+    container_name: node_exporter
     command: "--path.rootfs=/host"
     pid: host
     restart: unless-stopped
     volumes:
       - /:/host:ro,rslave
-    networks:
-      - monitoring
-    hostname: node_exporter.device1.local  # Set a unique DNS hostname for the device
-
-networks:
-  monitoring:
-    external: true  # Assuming 'monitoring' is an existing external network used by your main Prometheus container
+    network_mode: host
+    hostname: node_exporter.device1.local

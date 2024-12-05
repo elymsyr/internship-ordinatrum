@@ -18,17 +18,23 @@ scrape_configs:
 # the ‘node_exporter’s within the targets will be the ip’s of the device to be monitored.
 # in this case I am able to use this placeholder is because the components are in the same container environment
 
+
+  # WORKS WITH mDNS.
+  # - job_name: 'node_exporter'
+  #   dns_sd_configs:
+  #     - names:
+  #         - 'node_exporter.device1.local'  # Match all DNS records like node_exporter.device1.local
+  #       type: 'A'  # Type A record for IPv4 addresses
+  #       port: 9100  # Default port for node_exporter
+  #   relabel_configs:
+  #     - source_labels: [__address__]
+  #       target_label: instance
+  #     - source_labels: [__meta_dns_name]
+  #       target_label: device
+
   - job_name: 'node_exporter'
-    dns_sd_configs:
-      - names:
-          - 'node_exporter.*.local'  # Match all DNS records like node_exporter.device1.local
-        type: 'A'  # Type A record for IPv4 addresses
-        port: 9100  # Default port for node_exporter
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: instance
-      - source_labels: [__meta_dns_name]
-        target_label: device
+    static_configs:
+      - targets: ['192.168.0.50:9100', 'node_exporter:9100']
 
   - job_name: 'grok_exporter'
     static_configs:
