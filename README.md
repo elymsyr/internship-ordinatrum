@@ -1,6 +1,12 @@
 # Internship Ordinatrum: Monitoring System with Dockerized Prometheus, Grafana, Node Exporter, Grok Exporter, and Telegraf
 
 This project sets up a comprehensive monitoring system using Docker Compose, combining Prometheus, Grafana, Node Exporter, Grok Exporter, and Telegraf. It also includes an API to interact with Grafana and Prometheus, providing insights into device uptime, system performance, and potential issues.
+<div style="display: flex; justify-content: center; align-items: center; height: fit; flex-direction: column; text-align: center;">
+    <a href="monitoring-system/API/app/alert_api_test.html" style="color: inherit;">
+        <h3>Raw Alert Notification with Embedded Panels</h3>
+        <img src="alert.png" width="500" alt="Raw Alert Notification with Embedded Panels">
+    </a>
+</div>
 
 ## Features
 
