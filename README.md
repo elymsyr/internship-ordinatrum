@@ -126,8 +126,14 @@ chmod +x install_and_run.sh
 
 
 <div style="display: flex; justify-content: center; align-items: center; height: fit; flex-direction: column; text-align: center;">
-    <a href="monitoring-system/API/app/alert_api_test.html" style="color: inherit;">
-        <h4>Raw Alert Notification with Embed Panels</h4>
-        <img src="alert.png" width="550" alt="Raw Alert Notification with Embedded Panels">
+    <img src="alert.png" width="500" alt="Raw Alert Notification with Embedded Panels">
+    <a href="monitoring-system/API/app/alert_api_test.html" style="underline-style: none; color: inherit;">
+        <h5>Raw Alert Notification with Embed Panels</h5>
     </a>
 </div>
+
+## Security Notice
+
+This project is primarily focused on functionality and does not include extensive security features or practices. It is recommended that you review and implement necessary security measures before using this project in a production environment. This includes, but is not limited to, securing API endpoints, encrypting sensitive data, and ensuring proper access control.
+
+**Disclaimer:** The author assumes no responsibility for any security vulnerabilities or damages that may occur through the use of this project. *Use at your own risk.*
