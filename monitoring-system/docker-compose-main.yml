@@ -41,9 +41,9 @@ services:
       - monitoring
     restart: unless-stopped
 
-  node_exporter1:
+  node_exporter_1:
     image: quay.io/prometheus/node-exporter:v1.8.1
-    container_name: node_exporter1
+    container_name: node_exporter_1
     command: "--path.rootfs=/host"
     pid: host
     restart: unless-stopped
@@ -52,9 +52,9 @@ services:
     networks:
       - monitoring
 
-  node_exporter2:
+  node_exporter_2:
     image: quay.io/prometheus/node-exporter:v1.8.1
-    container_name: node_exporter2
+    container_name: node_exporter_2
     command: "--path.rootfs=/host"
     pid: host
     restart: unless-stopped
@@ -101,16 +101,16 @@ services:
 
   fastapi:
     build:
-      context: ./API  # Path to the directory containing the Dockerfile
-      dockerfile: Dockerfile  # The Dockerfile to use
+      context: ./API
+      dockerfile: Dockerfile
     container_name: fastapi
     ports:
       - "8000:8000"
     volumes:
-      - ./API/app:/app  # Mount the local app directory into the container
+      - ./API/app:/app
     networks:
       - monitoring
-    restart: unless-stopped  # Ensures the service restarts unless manually stopped
+    restart: unless-stopped
 
 networks:
   monitoring:
