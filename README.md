@@ -128,7 +128,7 @@ chmod +x install_and_run.sh
 <div style="display: flex; justify-content: center; align-items: center; height: fit; flex-direction: column; text-align: center;">
     <img src="alert.png" width="500" alt="Raw Alert Notification with Embedded Panels">
     <a href="monitoring-system/API/app/alert_api_test.html" style="underline-style: none; color: inherit;">
-        <h5>Raw Alert Notification with Embed Panels</h5>
+        <h5>Raw Alert Notification with Embedded Panels</h5>
     </a>
 </div>
 

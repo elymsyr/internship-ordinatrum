@@ -248,7 +248,8 @@ async def receive_alert(request: Request):
 
     # Send the alert to all connected WebSocket clients
     for connection in active_connections:
-        await connection.send_json(payload)
+        for alert in payload['alerts']:
+            await connection.send_json(alert)
     
     return {"status": "Alert received", "data": alert_group.dict()}
 
