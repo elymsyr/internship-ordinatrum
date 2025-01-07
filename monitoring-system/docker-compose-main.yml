@@ -9,6 +9,7 @@ volumes:
 services:
   prometheus:
     image: docker.io/prom/prometheus:v2.53.0
+    user: root
     container_name: prometheus
     ports:
       - 9090:9090
@@ -75,17 +76,18 @@ services:
       - monitoring
     restart: unless-stopped
 
-  grok_exporter:
-    image: palobo/grok_exporter:latest
-    container_name: grok_exporter
-    volumes:
-      - ./config/grok_exporter_config.yml:/etc/grok_exporter/config.yml
-      - ./logs/app.log:/var/log/app.log:ro
-    ports:
-      - "9144:9144"
-    networks:
-      - monitoring
-    restart: unless-stopped
+  # grok_exporter:
+  #   image: palobo/grok_exporter:latest
+  #   user: root
+  #   container_name: grok_exporter
+  #   volumes:
+  #     - ./config/grok_exporter_config.yml:/etc/grok_exporter/config.yml
+  #     - ./logs/app.log:/var/log/app.log:ro
+  #   ports:
+  #     - "9144:9144"
+  #   networks:
+  #     - monitoring
+  #   restart: unless-stopped
 
   alertmanager:
     image: prom/alertmanager:v0.24.0

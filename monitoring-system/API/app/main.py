@@ -35,7 +35,7 @@ def get_dashboard_by_uid(uid: str):
         return {"error": f"Dashboard with UID {uid} not found", "status_code": response.status_code}
 
 @app.get("/prometheus/query", tags=["Prometheus"])
-def query_prometheus(query: str = 'node_cpu_seconds_total{instance="node_exporter2:9100"}', start: str = '2024-12-01T00:00:00Z', end: str = 'now', step: str = '60s'):
+def query_prometheus(query: str = 'node_cpu_seconds_total{instance="node_exporter_2:9100"}', start: str = '2024-12-01T00:00:00Z', end: str = 'now', step: str = '60s'):
     """
     Query Prometheus data using the provided query and optional time range.
 
